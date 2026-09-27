@@ -1,26 +1,23 @@
 # AI History Research Assistant: Project Plan
 
-Week 2, The Gen Academy: "Build Your RAG Application". Track 2 (LangChain + LangGraph), bring-your-own use case.
+A citation-grounded RAG system over AI-history sources, built with LangChain + LangGraph and measured against an LLM answering alone.
 
 **Research question:** When does retrieval-augmented generation measurably beat an LLM answering from its own pretrained knowledge on AI-history questions?
 
 ---
 
-## What the handout requires (source of truth)
+## Requirements
 
 | Requirement | Where it lands |
 |---|---|
 | One-liner: user, question type, corpus, surface, % faithfulness and/or % relevance | Phase 0 |
-| Framework fields: use case, corpus, ingestion + cleaning, ingestion + freshness, chunking + embedding, retrieve (1–2 sentences each) | Phase 0 draft, finalized in Phase 8 |
+| Design summary: use case, corpus, ingestion + cleaning, freshness, chunking + embedding, retrieval (1–2 sentences each) | Phase 0 draft, finalized in Phase 8 |
 | Latency ceiling picked up front | Phase 0 |
 | Explicit "I don't know" path, designed first | Phase 4 |
 | Cited answers | Phase 4 |
 | Evaluation of retrieval quality and failures | Phases 5–6 |
-| Bonus: vibe-coded chatbot UI on top of the RAG system | Phase 7 |
-| **Deliverable 1:** Google Doc covering overview, datasets, prompts, iterations tried, and learnings | Phase 8 |
-| **Deliverable 2:** video of 5 min or less covering the walkthrough, **how you used AI coding tools**, and a live demo | Phase 8 |
-| **Deliverable 3:** GitHub repo link | Phase 8 |
-| Nebius credits are available for embeddings and generation | Optional; we default to local embeddings + OpenAI (see Phase 0) |
+| Chat UI on top of the RAG system | Phase 7 |
+| Write-up and demo | Phase 8 |
 
 ---
 
@@ -28,11 +25,11 @@ Week 2, The Gen Academy: "Build Your RAG Application". Track 2 (LangChain + Lang
 **Goal:** get decisions on paper and a working environment.
 
 - [x] Draft the one-liner, including a faithfulness target (e.g. ≥90%) and a latency ceiling (e.g. p95 ≤ 8s end to end)
-- [ ] Draft all six framework fields (a first pass is fine; they get revised in Phase 8)
+- [ ] Draft the design summary (a first pass is fine; it gets revised in Phase 8)
 - [x] `git init`, `.gitignore`, `README.md` stub
 - [x] Python 3.12 via `uv` (the system Python is 3.9.6, which is too old for current LangChain)
-- [x] Model stack: OpenAI `gpt-4.1-mini` (generation, LLM-only baseline, judge) + `text-embedding-3-small` (same models the course lessons use; a full corpus embed costs cents). Local cross-encoder reranker in Phase 6 if it's needed.
-- [x] All providers are switchable in `config.py` (LangChain `init_chat_model`), so moving to Ollama or the course's Nebius credits is a config change, not a code change
+- [x] Model stack: OpenAI `gpt-4.1-mini` (generation, LLM-only baseline, judge) + `text-embedding-3-small` (a full corpus embed costs cents). Local cross-encoder reranker in Phase 6 if it's needed.
+- [x] All providers are switchable in `config.py` (LangChain `init_chat_model`), so moving to Ollama or another provider is a config change, not a code change
 - [ ] `OPENAI_API_KEY` in `.env` (gitignored), with a hard usage limit set in the OpenAI dashboard
 - [x] Smoke test: one chat call and one local embedding call
 - [x] `CLAUDE.md` holding the project conventions, so Claude Code in VSCode has the context
@@ -96,7 +93,7 @@ Fixes made along the way: false numbered headings (addresses, dates), a bibliogr
 
 **Exit:** both systems answer all golden questions end to end from the CLI.
 
-**Outcome:** the code follows the course app's layout: `get_llm` / `get_vector_store` factories, `RAG_PROMPT` built with `PromptTemplate.from_template`, `retrieve(question, strategy)` and `answer_question(question, strategy)`, with the LangGraph flow in `rag_graph.py`.
+**Outcome:** the code is organised around small factories and entry points: `get_llm` / `get_vector_store` factories, `RAG_PROMPT` built with `PromptTemplate.from_template`, `retrieve(question, strategy)` and `answer_question(question, strategy)`, with the LangGraph flow in `rag_graph.py`.
 Behavior on all 34 questions: **31/34 correct, all 6 refusals correct** (2 at the free score gate, 4 at the evidence check). Latency p50 2.3s, **p95 3.5s** (target ≤ 8s).
 3 false refusals, all caused by retrieval, not by the grader: q05 (acronym, so BM25), q07 (the "year 2000" query doesn't match Turing's "fifty years" wording, and the right Turing chunk wasn't retrieved), q24 (a comparison, so one query finds only one side).
 Lesson: doc-level hit@k overstates retrieval quality (q07 counted as a hit), so Phase 5 adds chunk-level evidence checks.
@@ -170,19 +167,19 @@ Both targets met: faithfulness ≥ 90% (91%), p95 ≤ 8s (3.97s). Judge cost: ~1
 
 **Exit:** a final config is chosen with evidence behind it, plus a written "when does RAG help" analysis.
 
-## Phase 7: Chat UI (bonus) ✅ (built before Phase 6 at the user's request; strategies plug in automatically)
+## Phase 7: Chat UI ✅ (built before Phase 6 at the user's request; strategies plug in automatically)
 - [x] Streamlit chat: answer with inline `[n]` citations, a sources list, an expandable "Retrieved context" panel with scores, and a latency badge
-- [x] Optional toggle: show the LLM-only answer side by side, which works well for the demo video
+- [x] Optional toggle: show the LLM-only answer side by side, which works well for demos
 
 **Exit:** `uv run streamlit run app.py` works locally.
 
-**Outcome:** `app.py` follows the course app's structure (main → tabs → render_* functions, chat_input + history, expanders). Features: [n] superscript citations with source cards (primary/secondary icon, authors, page/section, link); refusal banner with the reason (score gate vs evidence check); "Compare with LLM-only" and "LLM fallback on refusal" toggles (the fallback is clearly labelled as unverified); retrieved-context expander with scores; per-stage timings; example questions by audience; a corpus browser tab.
+**Outcome:** `app.py` is structured as main → tabs → render_* functions, with chat_input + history and expanders. Features: [n] superscript citations with source cards (primary/secondary icon, authors, page/section, link); refusal banner with the reason (score gate vs evidence check); "Compare with LLM-only" and "LLM fallback on refusal" toggles (the fallback is clearly labelled as unverified); retrieved-context expander with scores; per-stage timings; example questions by audience; a corpus browser tab.
 **v2 of the UI: side-by-side streaming.** RAG and LLM-only run at the same time and stream token by token into two columns. Each runs in a worker thread that pushes into a queue, and Streamlit's script thread drains both queues and draws. RAG streams only the `generate` node's tokens via LangGraph `stream_mode=["updates","messages"]` (`stream_answer()` in rag_graph.py), and shows its stage live (🔎 Retrieving → 🧪 Checking the evidence → ✍️ Writing). Each column shows time-to-first-token and total. A measured run: the LLM-only column streams from 0.2s and finishes at ~1.2s, while RAG retrieves and checks the evidence until ~1.6s, then streams until 2.8s. That makes the cost of grounding visible in the demo. RAG-only mode keeps the labelled "LLM fallback on refusal".
 **UI simplification (user request):** removed the retrieval-strategy radio, the side-by-side toggle and the fallback toggle. The layout is always RAG vs LLM-only side by side, using `config.DEFAULT_STRATEGY`; the fallback toggle was then restored above the RAG column, labelled as a RAG setting ("🧠 RAG: fall back to the LLM's answer when refused"); on a refusal it shows the LLM-only column's answer inside the RAG column, labelled unverified, with no extra API call. To demo a Phase 6 strategy, change `DEFAULT_STRATEGY` in config.py.
 Bug found in testing: Streamlit rendered "$13,500 … $1,200" as a LaTeX formula, so all model/user text now escapes `$`.
 
-## Phase 8: Submission
-- 
+## Phase 8: Write-up and demo
+- [ ] Project write-up and a short demo walkthrough
 
 ---
 
@@ -211,7 +208,7 @@ Later (paired with Phase 6): query-rewriting view, reranker before/after, metada
 
 ## Planned repo layout
 ```
-week2_RAG_Application/
+ai-history-rag/
 ├── PROJECT_PLAN.md
 ├── CLAUDE.md
 ├── README.md

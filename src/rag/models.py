@@ -1,4 +1,4 @@
-"""Model clients, created once and reused (the course app's get_llm/get_embeddings pattern)."""
+"""Model clients, created once and reused (get_llm / get_embeddings)."""
 
 from functools import lru_cache
 

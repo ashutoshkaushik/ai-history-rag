@@ -1,6 +1,6 @@
 """Retrieval over the Chroma index.
 
-Mirrors the course app: cached get_* factories plus retrieve(question, strategy).
+Cached get_* factories plus retrieve(question, strategy).
 Strategies are added here as they are measured (Phase 6 adds "hybrid").
 """
 
@@ -46,7 +46,7 @@ def tokenize(text: str) -> list[str]:
 @lru_cache(maxsize=1)
 def get_bm25_retriever() -> BM25Retriever:
     """BM25 over the SAME chunks as the vector index (built from data/processed/chunks.jsonl),
-    so both retrievers search identical units, as in the course's hybrid notebook."""
+    so both retrievers search identical units."""
     docs = []
     with (config.PROCESSED_DIR / "chunks.jsonl").open() as f:
         for line in f:
@@ -69,7 +69,7 @@ def rrf_fuse(ranked: dict[str, list[Document]], weights: dict[str, float], c: in
              k: int = config.TOP_K) -> list[tuple[Document, float, dict[str, int]]]:
     """Weighted Reciprocal Rank Fusion: score(doc) = sum over lists of weight / (c + rank).
 
-    Same formula as langchain_classic's EnsembleRetriever (used in the course's hybrid notebook).
+    Same formula as langchain_classic's EnsembleRetriever.
     Returns (doc, rrf_score, {list_name: rank}) for the top k.
     """
     scores, ranks, by_id = {}, {}, {}

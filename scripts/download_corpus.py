@@ -20,7 +20,7 @@ import yaml
 
 from rag import config
 
-USER_AGENT = "AIHistoryRAG/0.1 (educational RAG course project; python-httpx)"
+USER_AGENT = "AIHistoryRAG/0.1 (educational RAG project; python-httpx)"
 WIKI_API = "https://en.wikipedia.org/w/api.php"
 SCANNED_CHARS_PER_PAGE = 200  # below this, a PDF page probably has no text layer
 

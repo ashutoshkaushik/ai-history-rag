@@ -142,7 +142,7 @@ LEARN: dict[str, dict] = {
             "**BM25 weights rare words.** Common words like `gpt` (in many chunks) count for little; rare names "
             "and numbers count for a lot. Stopwords (what, the, of) are ignored entirely.",
             "**RRF fuses by rank, not score.** Each list adds `weight ÷ (60 + rank)` per chunk. The hand-written "
-            "version here gives exactly the same results as LangChain's `EnsembleRetriever` from the course.",
+            "version here gives exactly the same results as LangChain's `EnsembleRetriever`.",
             "**Hybrid isn't automatically better.** At 50/50 it matched vector search on top-5 hits. Whether a "
             "different weight helps overall has to be measured, not assumed.",
         ],

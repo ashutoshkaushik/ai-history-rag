@@ -71,8 +71,8 @@ def doc_index() -> dict:
 def retrieval_tab() -> None:
     st.markdown("<div class='lab-sub'>The same question, three ways of finding chunks. <b>Vector</b> search "
                 "compares meaning (embeddings, cosine similarity). <b>BM25</b> counts shared keywords, weighting "
-                "rare words higher. <b>Hybrid</b> fuses both ranked lists with Reciprocal Rank Fusion, the "
-                "course's notebook-3 approach. For test questions, a green border and ✓ Gold mark a document that "
+                "rare words higher. <b>Hybrid</b> fuses both ranked lists with Reciprocal Rank Fusion. "
+                "For test questions, a green border and ✓ Gold mark a document that "
                 "contains the answer.</div>", unsafe_allow_html=True)
 
     qs = golden()

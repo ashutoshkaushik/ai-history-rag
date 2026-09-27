@@ -12,7 +12,7 @@
 4. generate        answer only from numbered sources, citing [n]
 5. refuse          a fixed "I couldn't find sufficient evidence" message
 
-Public entry point, matching the course app: answer_question(question, strategy).
+Public entry point: answer_question(question, strategy).
 """
 
 import re

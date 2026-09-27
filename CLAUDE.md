@@ -1,7 +1,7 @@
 # AI History Research Assistant
 
 Citation-grounded RAG over a curated corpus of ~25 AI-history sources, plus an LLM-only baseline for comparison.
-Course: The Gen Academy Week 2 (LangChain + LangGraph track). The phased plan and progress checkboxes are in `PROJECT_PLAN.md`; read it first.
+Built with LangChain + LangGraph. The phased plan and progress checkboxes are in `PROJECT_PLAN.md`; read it first.
 
 ## Stack
 - Python 3.12 managed by `uv` (always `uv run ...`; add deps with `uv add`, never pip)
@@ -21,7 +21,7 @@ Course: The Gen Academy Week 2 (LangChain + LangGraph track). The phased plan an
 - Evaluate: `make eval LABEL=name` · re-grade saved answers: `uv run python -m rag.evaluate --rejudge <run_id> [--keep-faithfulness]`
 - Ask (RAG): `uv run python -m rag.ask "question"` (`--compare` for RAG vs LLM-only, `--context` to show chunks)
 
-## Code layout (mirrors the course app's structure)
+## Code layout
 - `models.py` get_llm / get_embeddings · `retrieve.py` get_vector_store, retrieve(question, strategy), RAG_STRATEGIES
 - `prompts.py` RAG_PROMPT / GRADE_PROMPT / LLM_ONLY_PROMPT · `rag_graph.py` LangGraph flow + answer_question()
 - `baseline.py` llm_only_answer() / llm_only_stream() · `ingest.py` load → clean → chunk → embed
@@ -37,6 +37,5 @@ Course: The Gen Academy Week 2 (LangChain + LangGraph track). The phased plan an
 ## Conventions
 - Package code in `src/rag/`, one-off scripts in `scripts/`, eval data in `eval/`.
 - `data/` is gitignored. Source PDFs are downloaded by script, never committed.
-- `Mastering-Agentic-AI-Week2-Session1-main/` is course lesson material, for reference only. Don't modify or import from it.
 - Every chunk carries full manifest metadata (title, authors, year, era, source_type, document_type, url, page, section).
 - Keep it simple: add hybrid retrieval or reranking only when eval numbers justify it.

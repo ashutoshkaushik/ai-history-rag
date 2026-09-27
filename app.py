@@ -2,7 +2,7 @@
 
     uv run streamlit run app.py
 
-Structure follows the course's company_kb_viewer.py: main() builds the page and tabs,
+Structure: main() builds the page and tabs,
 render_research_assistant() is the chat, render_corpus_browser() lists the corpus.
 All RAG logic lives in src/rag; this file only calls stream_answer() and llm_only_stream(),
 so pipeline improvements show up here without UI changes.
