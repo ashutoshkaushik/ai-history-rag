@@ -57,7 +57,8 @@ def chunk_viewer_page() -> None:
 def embedding_viewer_page() -> None:
     from lab.rag_lab import pipeline_header
     pipeline_header("embeddings")
-    st.caption("All 1,145 chunk embeddings projected to 2D. Nearby dots mean similar meaning. Click a dot "
+    from rag.bootstrap import chunk_count
+    st.caption(f"All {chunk_count():,} chunk embeddings projected to 2D. Nearby dots mean similar meaning. Click a dot "
                "to see its 1,536 numbers and nearest neighbours, or pick a test question to watch retrieval "
                "draw lines to its top-5 chunks.")
     _embed(EMBEDDING_VIEWER, 900, "uv run python scripts/visualize_embeddings.py")

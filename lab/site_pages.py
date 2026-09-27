@@ -13,6 +13,7 @@ import yaml
 
 from lab.nav import go_button, link
 from rag import config
+from rag.bootstrap import chunk_count
 from ui import theme
 
 CSS = """
@@ -160,7 +161,8 @@ def home_page() -> None:
     st.markdown("### How it works")
     st.markdown(
         "<div class='steps'>"
-        "<div><b>1 · Retrieve</b><span>Find the 5 most relevant passages among 1,145 chunks of the corpus.</span></div>"
+        f"<div><b>1 · Retrieve</b><span>Find the {config.TOP_K} most relevant passages among "
+        f"{chunk_count():,} chunks of the corpus.</span></div>"
         "<div><b>2 · Gate</b><span>If nothing is even close, refuse instantly, with no model call.</span></div>"
         "<div><b>3 · Check</b><span>A model reads the passages and decides whether they actually answer.</span></div>"
         "<div><b>4 · Answer</b><span>Write from those passages only, citing each claim as [1]…[5].</span></div>"

@@ -464,15 +464,27 @@ def chat_page() -> None:
         render_corpus_browser()
 
 
-@st.cache_resource(show_spinner=False)
+@st.cache_resource
+def _build_lock() -> threading.Lock:
+    return threading.Lock()                                # one shared lock for all visitor sessions
+
+
 def ensure_index() -> bool:
-    """On a fresh machine (e.g. the first cloud start), build data/: download, embed, viewers."""
+    """On a fresh machine (e.g. the first cloud start), build data/: download, embed, viewers.
+
+    The check runs on every page load but outside any cache: Streamlit replays elements drawn inside
+    a cached function on every later run, which previously left the "building…" box on screen forever.
+    """
     from rag import bootstrap
     if bootstrap.index_ready():
         return True
-    with st.status("First start: building the search index. This takes about 3 minutes, once.", expanded=True) as s:
-        bootstrap.build(report=lambda step: s.write(f"• {step}…"))
-        s.update(label="Index ready", state="complete", expanded=False)
+    with _build_lock():                                    # a second visitor waits instead of building twice
+        if bootstrap.index_ready():
+            return True
+        with st.status("First start: building the search index. This takes about 3 minutes, once.",
+                       expanded=True) as s:
+            bootstrap.build(report=lambda step: s.write(f"• {step}…"))
+            s.update(label="Index ready", state="complete", expanded=False)
     return bootstrap.index_ready()
 
 

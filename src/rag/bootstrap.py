@@ -19,6 +19,12 @@ STEPS = [
 ]
 
 
+def chunk_count() -> int:
+    """Number of chunks in the current index (it can differ slightly between builds: Wikipedia is fetched live)."""
+    path = config.PROCESSED_DIR / "chunks.jsonl"
+    return sum(1 for _ in path.open()) if path.exists() else 0
+
+
 def index_ready() -> bool:
     return (config.PROCESSED_DIR / "chunks.jsonl").exists() and config.CHROMA_DIR.exists()
 

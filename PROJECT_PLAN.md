@@ -261,3 +261,9 @@ Same baseline prompt, temperature 0, 5 runs each: **gpt-4.1-mini → "$500" 5/5;
 - Retrieval page: a per-column gold summary ("✓ Gold found at rank 3" / "✗ Gold not in top 5"), a note that scores aren't comparable across methods, and a "Compact view" toggle (rank × method table, gold cells highlighted).
 - The same card is used on the Prompts page (retrieved chunks, with token counts) and in the Research Assistant's "Retrieved context" (2-column grid). Chat history now stores full chunk text for "Show more".
 - Breadcrumb is a single row (scrolls sideways when narrow); Previous/Next buttons are at the bottom of all six Lab pages.
+
+### Public app live: https://ai-history-rag.streamlit.app/ (2026-09-26)
+- Checked on the live site: pages render, public mode works (the Chunks viewer lists 19 CC BY-SA docs with the licensing notice, no errors).
+- Bug: the "First start: building the search index…" box stayed visible forever. It was drawn inside an `st.cache_resource` function, and Streamlit replays a cached function's elements on every later run. Fix: `ensure_index()` checks `index_ready()` outside any cache and shows `st.status` only during a real build, with a shared lock so concurrent first visitors don't build twice. Verified on a clean copy: the box shows during the ~2.5-minute build, ends as "Index ready", and is gone after reload.
+- The chunk count on the home page and the Embeddings caption now comes from the index (`rag.bootstrap.chunk_count()`): the cloud build has 1,146 chunks vs 1,145 locally (live Wikipedia).
+- The live app was still on the previous commit when checked; it needs a push and possibly a reboot to pick up the design-system release.
