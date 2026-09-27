@@ -1,0 +1,765 @@
+# AI History Research Assistant: corpus manifest
+#
+# Single source of truth for what is in the corpus. Ingestion reads this file;
+# documents are downloaded by scripts/download_corpus.py and never committed.
+#
+# Fields:
+#   id            stable slug (used in citations and eval gold labels)
+#   title, authors, year
+#   era           foundations | early_symbolic | knowledge_systems | ai_winters |
+#                 statistical_ml | deep_learning | foundation_models | cross_era
+#   source_type   primary (original work) | secondary (later explanation/history) | reference (overview/timeline)
+#   document_type research_paper | proposal | government_report | essay | book_chapter | encyclopedia_article | technical_report
+#   format        pdf | html | wikipedia
+#   url           where the document is fetched from
+#   pages         optional "first-last" page range to keep (drops appendices of very long papers)
+#   license       redistribution note (why we don't commit the file)
+#   why           why it belongs in the corpus
+#   enables       question categories it supports (A direct, B multi-doc, C comparison,
+#                 D specific evidence, E temporal, G long-tail detail)
+
+eras:
+  foundations:       {label: "Foundations",                years: "1943-1956"}
+  early_symbolic:    {label: "Early symbolic AI",          years: "1956-1974"}
+  knowledge_systems: {label: "Knowledge & expert systems", years: "1965-1987"}
+  ai_winters:        {label: "AI winters",                 years: "1973-1993"}
+  statistical_ml:    {label: "Statistical machine learning", years: "1990-2011"}
+  deep_learning:     {label: "Deep learning",              years: "2006-2017"}
+  foundation_models: {label: "Transformers & foundation models", years: "2017-present"}
+  cross_era:         {label: "Cross-era overviews",        years: "1943-present"}
+
+documents:
+
+  # ---------------------------------------------------------------- Foundations
+  - id: mcculloch_pitts_1943
+    title: "A Logical Calculus of the Ideas Immanent in Nervous Activity"
+    authors: [Warren S. McCulloch, Walter Pitts]
+    year: 1943
+    era: foundations
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://www.cs.cmu.edu/~./epxing/Class/10715/reading/McCulloch.and.Pitts.pdf
+    license: "Journal article; university course copy, not redistributed"
+    why: "First formal model of artificial neurons; root of the connectionist lineage."
+    enables: [A, C, D]
+
+  - id: turing_1950
+    title: "Computing Machinery and Intelligence"
+    authors: [Alan M. Turing]
+    year: 1950
+    era: foundations
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://courses.cs.umbc.edu/471/papers/turing.pdf
+    license: "Mind (OUP); university course copy, not redistributed"
+    why: "Proposes the imitation game and rebuts objections to machine intelligence."
+    enables: [A, D, G, C]
+
+  - id: shannon_chess_1950
+    title: "Programming a Computer for Playing Chess"
+    authors: [Claude E. Shannon]
+    year: 1950
+    era: foundations
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://vision.unipv.it/IA1/ProgrammingaComputerforPlayingChess.pdf
+    license: "Philosophical Magazine; public copy, not redistributed"
+    why: "Founding paper of computer game playing; minimax and evaluation functions. Pairs with Deep Blue."
+    enables: [A, C, D, G]
+
+  - id: dartmouth_proposal_1955
+    title: "A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence"
+    authors: [John McCarthy, Marvin L. Minsky, Nathaniel Rochester, Claude E. Shannon]
+    year: 1955
+    era: foundations
+    source_type: primary
+    document_type: proposal
+    format: html
+    url: http://www-formal.stanford.edu/jmc/history/dartmouth/dartmouth.html
+    license: "Hosted by the McCarthy estate at Stanford; not redistributed"
+    notes: "The jmc.stanford.edu PDF has a broken text layer (numbers dropped), so we use the HTML transcription."
+    why: "Coins 'artificial intelligence'; states the field's original goals, participants and budget."
+    enables: [A, C, D, G]
+
+  - id: mccarthy_common_sense_1959
+    title: "Programs with Common Sense"
+    authors: [John McCarthy]
+    year: 1959
+    era: foundations
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: http://jmc.stanford.edu/articles/mcc59/mcc59.pdf
+    license: "Hosted by the McCarthy estate at Stanford; not redistributed"
+    why: "Proposes the Advice Taker; origin of logic-based knowledge representation."
+    enables: [A, C, D]
+
+  - id: wiki_dartmouth_workshop
+    title: "Dartmouth workshop"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: foundations
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Dartmouth_workshop
+    license: "CC BY-SA 4.0"
+    why: "Retrospective account of the workshop; contrasts with the proposal itself."
+    enables: [A, B, C]
+
+  # ---------------------------------------------------------- Early symbolic AI
+  - id: rosenblatt_perceptron_1958
+    title: "The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain"
+    authors: [Frank Rosenblatt]
+    year: 1958
+    era: early_symbolic
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://homepages.math.uic.edu/~lreyzin/papers/rosenblatt58.pdf
+    license: "Psychological Review; university course copy, not redistributed"
+    why: "Original perceptron paper; the first learning neural network."
+    enables: [A, C, D]
+
+  - id: wiki_general_problem_solver
+    title: "General Problem Solver"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: early_symbolic
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/General_Problem_Solver
+    license: "CC BY-SA 4.0"
+    notes: "Replaces Newell, Shaw & Simon's 1959 RAND report, whose copies (RAND, bitsavers, ACM) all block automated download."
+    why: "GPS and means-ends analysis; the heuristic-search paradigm of early AI."
+    enables: [A, B]
+
+  - id: minsky_steps_1961
+    title: "Steps Toward Artificial Intelligence"
+    authors: [Marvin Minsky]
+    year: 1961
+    era: early_symbolic
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://courses.csail.mit.edu/6.803/pdf/steps.pdf
+    license: "Proc. IRE; MIT course copy, not redistributed"
+    why: "Contemporary survey of search, pattern recognition, learning, planning and induction."
+    enables: [B, C, D, E]
+
+  - id: weizenbaum_eliza_1966
+    title: "ELIZA: A Computer Program for the Study of Natural Language Communication Between Man and Machine"
+    authors: [Joseph Weizenbaum]
+    year: 1966
+    era: early_symbolic
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://web.stanford.edu/class/cs124/p36-weizenabaum.pdf
+    license: "CACM; Stanford course copy, not redistributed"
+    why: "First chatbot; a natural comparison point for modern LLM chat."
+    enables: [A, C, D, G]
+
+  - id: wiki_perceptrons_book
+    title: "Perceptrons (book)"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: early_symbolic
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Perceptrons_(book)
+    license: "CC BY-SA 4.0"
+    why: "Minsky & Papert's critique and its disputed role in the decline of neural-net research."
+    enables: [B, C, E]
+
+  - id: wiki_eliza
+    title: "ELIZA"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: early_symbolic
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/ELIZA
+    license: "CC BY-SA 4.0"
+    why: "The ELIZA effect and its later reception; contrasts with Weizenbaum's own paper."
+    enables: [B, C]
+
+  - id: wiki_history_machine_translation
+    title: "History of machine translation"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: early_symbolic
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/History_of_machine_translation
+    license: "CC BY-SA 4.0"
+    why: "Georgetown experiment, the ALPAC report, and the shift from rule-based to statistical and neural MT."
+    enables: [B, E, C]
+
+  # ------------------------------------------------- Knowledge & expert systems
+  - id: minsky_frames_1974
+    title: "A Framework for Representing Knowledge"
+    authors: [Marvin Minsky]
+    year: 1974
+    era: knowledge_systems
+    source_type: primary
+    document_type: technical_report
+    format: pdf
+    url: https://courses.media.mit.edu/2004spring/mas966/Minsky%201974%20Framework%20for%20knowledge.pdf
+    license: "MIT AI Memo 306; course copy, not redistributed"
+    why: "Frames as a knowledge-representation scheme; core idea of the knowledge era."
+    enables: [A, D, C]
+
+  - id: mycin_book_ch1_1984
+    title: "Rule-Based Expert Systems (MYCIN), Chapter 1: The Context of the MYCIN Experiments"
+    authors: [Bruce G. Buchanan, Edward H. Shortliffe]
+    year: 1984
+    era: knowledge_systems
+    source_type: primary
+    document_type: book_chapter
+    format: pdf
+    url: https://www.shortliffe.net/Buchanan-Shortliffe-1984/Chapter-01.pdf
+    license: "Book chapter made freely available by the authors; not redistributed"
+    why: "First-hand account of MYCIN and the Stanford Heuristic Programming Project by its builders."
+    enables: [A, D, G]
+
+  - id: wiki_expert_system
+    title: "Expert system"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: knowledge_systems
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Expert_system
+    license: "CC BY-SA 4.0"
+    why: "History, architecture, commercial boom and limitations of expert systems."
+    enables: [B, C, E]
+
+  - id: wiki_mycin
+    title: "Mycin"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: knowledge_systems
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Mycin
+    license: "CC BY-SA 4.0"
+    why: "Retrospective on MYCIN's performance and why it was never used clinically."
+    enables: [A, B]
+
+  - id: wiki_dendral
+    title: "Dendral"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: knowledge_systems
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Dendral
+    license: "CC BY-SA 4.0"
+    why: "The first expert system; origins of the knowledge-is-power hypothesis."
+    enables: [A, B]
+
+  - id: wiki_knowledge_representation
+    title: "Knowledge representation and reasoning"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: knowledge_systems
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Knowledge_representation_and_reasoning
+    license: "CC BY-SA 4.0"
+    why: "Places frames, semantic nets and rules in context."
+    enables: [B, C]
+
+  # ------------------------------------------------------------------ AI winters
+  - id: lighthill_1973
+    title: "Artificial Intelligence: A General Survey (the Lighthill Report)"
+    authors: [James Lighthill]
+    year: 1973
+    era: ai_winters
+    source_type: primary
+    document_type: government_report
+    format: html
+    url: http://www.chilton-computing.org.uk/inf/literature/reports/lighthill_report/p001.htm
+    license: "SRC report; transcription hosted by Chilton Computing archive; not redistributed"
+    why: "The report that triggered UK AI funding cuts; its ABC categorization and 'combinatorial explosion' argument."
+    enables: [A, B, D, G]
+
+  - id: sutherland_reply_1973
+    title: "Some Comments on the Lighthill Report and on Artificial Intelligence (Part II of the Lighthill Report)"
+    authors: [N. S. Sutherland]
+    year: 1973
+    era: ai_winters
+    source_type: primary
+    document_type: government_report
+    format: html
+    url: http://www.chilton-computing.org.uk/inf/literature/reports/lighthill_report/p002.htm
+    license: "SRC report; transcription hosted by Chilton Computing archive; not redistributed"
+    notes: "Replaces McCarthy's 1974 review. His HTML page is only a stub, and the PDF has a garbled font encoding that would need OCR."
+    why: "Contemporary rebuttal published alongside the report; defends the 'bridge' category B that Lighthill condemned."
+    enables: [B, C, D]
+
+  - id: wiki_ai_winter
+    title: "AI winter"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: ai_winters
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/AI_winter
+    license: "CC BY-SA 4.0"
+    why: "Causes of both winters: MT failures, perceptron critique, Lighthill, DARPA cuts, Lisp machines."
+    enables: [B, E, C]
+
+  - id: wiki_lighthill_report
+    title: "Lighthill report"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: ai_winters
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Lighthill_report
+    license: "CC BY-SA 4.0"
+    why: "Retrospective view of the report; enables primary-vs-secondary comparison."
+    enables: [B, C]
+
+  - id: wiki_lisp_machine
+    title: "Lisp machine"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: ai_winters
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Lisp_machine
+    license: "CC BY-SA 4.0"
+    why: "The 1987 collapse of the Lisp machine market, a trigger of the second winter."
+    enables: [A, B, E]
+
+  - id: brooks_representation_1991
+    title: "Intelligence without Representation"
+    authors: [Rodney A. Brooks]
+    year: 1991
+    era: ai_winters
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://people.csail.mit.edu/brooks/papers/representation.pdf
+    license: "Artificial Intelligence journal; author's copy, not redistributed"
+    why: "Behavior-based robotics; a reaction against symbolic AI during the second winter."
+    enables: [C, D]
+
+  # ------------------------------------------------- Statistical machine learning
+  - id: brown_smt_1990
+    title: "A Statistical Approach to Machine Translation"
+    authors: [Peter F. Brown, John Cocke, Stephen A. Della Pietra, Vincent J. Della Pietra, Fredrick Jelinek, John D. Lafferty, Robert L. Mercer, Paul S. Roossin]
+    year: 1990
+    era: statistical_ml
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://aclanthology.org/J90-2002.pdf
+    license: "Computational Linguistics; ACL Anthology (CC BY). Still not redistributed, for consistency"
+    why: "IBM's statistical MT; the pivot from rules to data-driven methods."
+    enables: [A, C, D, E]
+
+  - id: hochreiter_lstm_1997
+    title: "Long Short-Term Memory"
+    authors: [Sepp Hochreiter, Jürgen Schmidhuber]
+    year: 1997
+    era: statistical_ml
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://deeplearning.cs.cmu.edu/F23/document/readings/LSTM.pdf
+    license: "Neural Computation; author's copy, not redistributed"
+    notes: "The JKU preprint PDF has a broken text layer, so we use the journal version (a CMU course copy)."
+    why: "LSTM; the sequence model that dominated before Transformers."
+    enables: [A, C, D]
+
+  - id: halevy_data_2009
+    title: "The Unreasonable Effectiveness of Data"
+    authors: [Alon Halevy, Peter Norvig, Fernando Pereira]
+    year: 2009
+    era: statistical_ml
+    source_type: primary
+    document_type: essay
+    format: pdf
+    url: https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/35179.pdf
+    license: "IEEE Intelligent Systems; Google Research copy, not redistributed"
+    why: "Argument that data scale beats elegant models; bridges the statistical and deep-learning eras."
+    enables: [C, D, E]
+
+  - id: wiki_deep_blue
+    title: "Deep Blue (chess computer)"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: statistical_ml
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Deep_Blue_(chess_computer)
+    license: "CC BY-SA 4.0"
+    why: "The 1997 Kasparov match; brute-force search, not learning."
+    enables: [A, C, G]
+
+  - id: wiki_svm
+    title: "Support vector machine"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: statistical_ml
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Support_vector_machine
+    license: "CC BY-SA 4.0"
+    why: "History of SVMs (Vapnik, 1990s kernel methods); dominant pre-deep-learning classifier."
+    enables: [A, E]
+
+  - id: wiki_backpropagation
+    title: "Backpropagation"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: statistical_ml
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Backpropagation
+    license: "CC BY-SA 4.0"
+    why: "History of backprop from Linnainmaa and Werbos to Rumelhart-Hinton-Williams 1986."
+    enables: [A, B, E]
+
+  # ------------------------------------------------------------- Deep learning
+  - id: hinton_dbn_2006
+    title: "A Fast Learning Algorithm for Deep Belief Nets"
+    authors: [Geoffrey E. Hinton, Simon Osindero, Yee-Whye Teh]
+    year: 2006
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://www.cs.toronto.edu/~hinton/absps/fastnc.pdf
+    license: "Neural Computation; author's copy, not redistributed"
+    why: "Greedy layer-wise pretraining; conventionally the start of the deep-learning revival."
+    enables: [A, D, E]
+
+  - id: deng_imagenet_2009
+    title: "ImageNet: A Large-Scale Hierarchical Image Database"
+    authors: [Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, Li Fei-Fei]
+    year: 2009
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf
+    license: "CVPR 2009; project-hosted copy, not redistributed"
+    why: "The dataset that enabled the deep-learning breakthrough in vision."
+    enables: [A, D, G]
+
+  - id: krizhevsky_alexnet_2012
+    title: "ImageNet Classification with Deep Convolutional Neural Networks"
+    authors: [Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton]
+    year: 2012
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://papers.nips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
+    license: "NeurIPS proceedings; not redistributed"
+    why: "AlexNet: GPUs, ReLU, dropout; the 2012 ImageNet result."
+    enables: [A, D, G, C]
+
+  - id: mikolov_word2vec_2013
+    title: "Efficient Estimation of Word Representations in Vector Space"
+    authors: [Tomas Mikolov, Kai Chen, Greg Corrado, Jeffrey Dean]
+    year: 2013
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/1301.3781
+    license: "arXiv; not redistributed"
+    why: "word2vec; dense word embeddings for NLP."
+    enables: [A, D]
+
+  - id: mnih_dqn_2013
+    title: "Playing Atari with Deep Reinforcement Learning"
+    authors: [Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Alex Graves, Ioannis Antonoglou, Daan Wierstra, Martin Riedmiller]
+    year: 2013
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/1312.5602
+    license: "arXiv; not redistributed"
+    why: "Deep RL from pixels; precursor to DeepMind's game-playing systems."
+    enables: [A, D, C]
+
+  - id: sutskever_seq2seq_2014
+    title: "Sequence to Sequence Learning with Neural Networks"
+    authors: [Ilya Sutskever, Oriol Vinyals, Quoc V. Le]
+    year: 2014
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/1409.3215
+    license: "arXiv; not redistributed"
+    why: "Encoder-decoder LSTMs for translation; the architecture Transformers replaced."
+    enables: [A, C, D]
+
+  - id: bahdanau_attention_2014
+    title: "Neural Machine Translation by Jointly Learning to Align and Translate"
+    authors: [Dzmitry Bahdanau, Kyunghyun Cho, Yoshua Bengio]
+    year: 2014
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/1409.0473
+    license: "arXiv; not redistributed"
+    why: "Introduces attention for sequence models; the direct ancestor of the Transformer."
+    enables: [A, C, D, E]
+
+  - id: he_resnet_2015
+    title: "Deep Residual Learning for Image Recognition"
+    authors: [Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun]
+    year: 2015
+    era: deep_learning
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/1512.03385
+    license: "arXiv; not redistributed"
+    why: "Residual connections enabling very deep networks; later used in Transformers."
+    enables: [A, D, G]
+
+  - id: wiki_alexnet
+    title: "AlexNet"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: deep_learning
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/AlexNet
+    license: "CC BY-SA 4.0"
+    why: "Retrospective on AlexNet's impact; pairs with the original paper."
+    enables: [B, C, E]
+
+  # ------------------------------------------- Transformers & foundation models
+  - id: vaswani_transformer_2017
+    title: "Attention Is All You Need"
+    authors: [Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, Illia Polosukhin]
+    year: 2017
+    era: foundation_models
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/1706.03762
+    license: "arXiv; not redistributed"
+    why: "The Transformer architecture."
+    enables: [A, D, G, C]
+
+  - id: devlin_bert_2018
+    title: "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+    authors: [Jacob Devlin, Ming-Wei Chang, Kenton Lee, Kristina Toutanova]
+    year: 2018
+    era: foundation_models
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/1810.04805
+    license: "arXiv; not redistributed"
+    why: "Pretrain-then-fine-tune with bidirectional Transformers."
+    enables: [A, D, C]
+
+  - id: radford_gpt2_2019
+    title: "Language Models are Unsupervised Multitask Learners"
+    authors: [Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever]
+    year: 2019
+    era: foundation_models
+    source_type: primary
+    document_type: technical_report
+    format: pdf
+    url: https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf
+    license: "OpenAI technical report; not redistributed"
+    why: "GPT-2: zero-shot task transfer from language modeling at scale."
+    enables: [A, D, E]
+
+  - id: sutton_bitter_lesson_2019
+    title: "The Bitter Lesson"
+    authors: [Richard S. Sutton]
+    year: 2019
+    era: foundation_models
+    source_type: secondary
+    document_type: essay
+    format: html
+    url: http://www.incompleteideas.net/IncIdeas/BitterLesson.html
+    license: "Author's website; not redistributed"
+    why: "A 70-year retrospective argument that general methods plus compute win; spans chess, Go, speech and vision."
+    enables: [B, C, E]
+
+  - id: kaplan_scaling_laws_2020
+    title: "Scaling Laws for Neural Language Models"
+    authors: [Jared Kaplan, Sam McCandlish, Tom Henighan, Tom B. Brown, Benjamin Chess, Rewon Child, Scott Gray, Alec Radford, Jeffrey Wu, Dario Amodei]
+    year: 2020
+    era: foundation_models
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/2001.08361
+    license: "arXiv; not redistributed"
+    pages: "1-19"
+    why: "Power-law scaling of loss with parameters, data and compute."
+    enables: [A, D, C]
+
+  - id: brown_gpt3_2020
+    title: "Language Models are Few-Shot Learners"
+    authors: [Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, et al.]
+    year: 2020
+    era: foundation_models
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/2005.14165
+    license: "arXiv; not redistributed"
+    pages: "1-40"
+    why: "GPT-3 and in-context few-shot learning. Truncated to the main body (the full paper is 75 pages)."
+    enables: [A, D, G]
+
+  - id: ouyang_instructgpt_2022
+    title: "Training Language Models to Follow Instructions with Human Feedback"
+    authors: [Long Ouyang, Jeff Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, et al.]
+    year: 2022
+    era: foundation_models
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/2203.02155
+    license: "arXiv; not redistributed"
+    pages: "1-20"
+    why: "InstructGPT: RLHF for instruction following, the method behind ChatGPT."
+    enables: [A, D, G, C]
+
+  - id: hoffmann_chinchilla_2022
+    title: "Training Compute-Optimal Large Language Models"
+    authors: [Jordan Hoffmann, Sebastian Borgeaud, Arthur Mensch, et al.]
+    year: 2022
+    era: foundation_models
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/2203.15556
+    license: "arXiv; not redistributed"
+    pages: "1-16"
+    why: "Chinchilla: revises Kaplan's scaling laws toward more data per parameter."
+    enables: [A, C, D]
+
+  - id: bai_constitutional_ai_2022
+    title: "Constitutional AI: Harmlessness from AI Feedback"
+    authors: [Yuntao Bai, Saurav Kadavath, Sandipan Kundu, Amanda Askell, et al.]
+    year: 2022
+    era: foundation_models
+    source_type: primary
+    document_type: research_paper
+    format: pdf
+    url: https://arxiv.org/pdf/2212.08073
+    license: "arXiv; not redistributed"
+    pages: "1-16"
+    why: "RL from AI feedback; an alternative to pure human-feedback alignment."
+    enables: [A, C, D]
+
+  - id: openai_gpt4_2023
+    title: "GPT-4 Technical Report"
+    authors: [OpenAI]
+    year: 2023
+    era: foundation_models
+    source_type: primary
+    document_type: technical_report
+    format: pdf
+    url: https://arxiv.org/pdf/2303.08774
+    license: "arXiv; not redistributed"
+    pages: "1-14"
+    why: "Multimodal frontier model; predictable scaling; the report withholds architecture details."
+    enables: [A, D, G]
+
+  - id: wiki_rlhf
+    title: "Reinforcement learning from human feedback"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: foundation_models
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback
+    license: "CC BY-SA 4.0"
+    why: "History of RLHF from 2017 preference learning to ChatGPT."
+    enables: [B, E]
+
+  - id: wiki_transformer
+    title: "Transformer (deep learning)"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: foundation_models
+    source_type: secondary
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/Transformer_(deep_learning)
+    license: "CC BY-SA 4.0"
+    why: "History of attention to Transformers and their later adoption; pairs with Vaswani et al."
+    enables: [B, C, E]
+
+  # ------------------------------------------------------- Cross-era overviews
+  - id: wiki_history_of_ai
+    title: "History of artificial intelligence"
+    authors: [Wikipedia contributors]
+    year: 2026
+    era: cross_era
+    source_type: reference
+    document_type: encyclopedia_article
+    format: wikipedia
+    url: https://en.wikipedia.org/wiki/History_of_artificial_intelligence
+    license: "CC BY-SA 4.0"
+    why: "Backbone narrative across all eras; supports temporal and comparison questions."
+    enables: [B, C, E]
+
+  - id: buchanan_brief_history_2005
+    title: "A (Very) Brief History of Artificial Intelligence"
+    authors: [Bruce G. Buchanan]
+    year: 2005
+    era: cross_era
+    source_type: secondary
+    document_type: essay
+    format: pdf
+    url: https://aaai.org/ojs/index.php/aimagazine/article/view/1848/1746
+    license: "AI Magazine (AAAI); publisher copy, not redistributed"
+    notes: "Replaces Wikipedia's 'Timeline of AI', which is all tables and extracts as empty headings."
+    why: "Insider retrospective by the co-creator of DENDRAL and MYCIN; supports primary-vs-retrospective comparisons."
+    enables: [B, C, E]
+
+  - id: ai100_2016
+    title: "Artificial Intelligence and Life in 2030 (One Hundred Year Study on AI, 2015 Study Panel)"
+    authors: [Peter Stone, et al.]
+    year: 2016
+    era: cross_era
+    source_type: secondary
+    document_type: technical_report
+    format: pdf
+    url: https://ai100.stanford.edu/sites/g/files/sbiybj18871/files/media/file/ai100report10032016fnl_singles.pdf
+    license: "Stanford AI100 (CC BY-ND 4.0); not redistributed"
+    why: "Institutional expert-panel view of AI's state and trajectory in 2016, just before Transformers."
+    enables: [B, C, E]

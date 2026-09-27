@@ -1,0 +1,49 @@
+# Manual faithfulness audit of run 20260926-1134-v1-vector
+#
+# Human check of the LLM judge. For 7 RAG answers (28% of the 25 answered), every claim
+# the judge extracted was read against the retrieved source passages.
+# Claims are indexed in the order they appear in the run's faithfulness.claims list.
+# Label: supported | unsupported (not stated, distorted, or over-inferred).
+#
+# Result: judge said 57/57 supported; human review found 6 unsupported → ~89.5% (51/57).
+# Pattern: no outright inventions. Errors are blends of two nearby facts, mis-dating,
+# and editorial inferences ("as Lighthill implied", "also underpinned transformer training").
+
+run: 20260926-1134-v1-vector
+audited_by: human review (project author + Claude Code), 2026-09-26
+answers:
+  q09: {claims: 8, unsupported: []}
+  q10: {claims: 3, unsupported: []}
+  q14:
+    claims: 4
+    unsupported:
+      - index: 3
+        claim: "The Transformer replaced multiplicative gating units used in LSTMs with an additive self-attention mechanism"
+        why: "Blend of two facts. The source says multiplicative units are 'conceptually distinct from the additive attention mechanism later introduced for seq2seq'. The Transformer uses scaled dot-product attention, not additive attention."
+  q22:
+    claims: 10
+    unsupported:
+      - index: 9
+        claim: "...rather than placing it under engineering boards as Lighthill implied"
+        why: "Sutherland proposes a panel reporting to the Science Board; 'as Lighthill implied' is an editorial addition with no source support."
+  q25:
+    claims: 6
+    unsupported:
+      - index: 3
+        claim: "Kaplan et al. implied that larger models trained on fixed data are optimal"
+        why: "Distortion. Kaplan says very large models on a relatively modest amount of data; 'fixed data' is not stated, and the judge cited an unrelated sentence."
+  q26:
+    claims: 18
+    unsupported:
+      - index: 5
+        claim: "Some commercial systems like SYSTRAN were developed and deployed for military and governmental use in the 1960s"
+        why: "Not found in the retrieved passages."
+      - index: 10
+        claim: "...Babel Fish and Google Translate ... became available in the early 1990s"
+        why: "Mis-dated. The source lists them under the '1980s and early 1990s' heading but does not date them; Babel Fish was 1997 and Google Translate 2006."
+  q28:
+    claims: 8
+    unsupported:
+      - index: 8
+        claim: "The developments that enabled AlexNet also underpinned later advances in transformer training"
+        why: "Editorial inference; no source connects AlexNet's enablers to transformer training."

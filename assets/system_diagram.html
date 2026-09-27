@@ -1,0 +1,272 @@
+<title>AI History RAG Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --bg: #F5F7F8;
+  --surface: #FFFFFF;
+  --ink: #18212B;
+  --muted: #5A6674;
+  --line: #C9D1D8;
+  --accent: #0E7C74;
+  --accent-soft: #E1F2EF;
+  --refuse: #A85B0C;
+  --refuse-soft: #FBEEDC;
+  --store: #EAF0F5;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #11161C; --surface: #19212A; --ink: #E4E9EE; --muted: #97A3B0; --line: #34414E;
+    --accent: #3CC7B8; --accent-soft: #15302F; --refuse: #F0A450; --refuse-soft: #33261A; --store: #1C2833;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #11161C; --surface: #19212A; --ink: #E4E9EE; --muted: #97A3B0; --line: #34414E;
+  --accent: #3CC7B8; --accent-soft: #15302F; --refuse: #F0A450; --refuse-soft: #33261A; --store: #1C2833;
+}
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.55 "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+}
+.wrap { max-width: 1140px; margin: 0 auto; padding: 40px 20px 64px; display: grid; gap: 40px; }
+header { display: grid; gap: 8px; max-width: 70ch; }
+.eyebrow { font: 500 12px/1 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: 28px; line-height: 1.2; margin: 0; font-weight: 600; text-wrap: balance; }
+h2 { font-size: 18px; margin: 0; font-weight: 600; text-wrap: balance; }
+p { margin: 0; }
+.lede { color: var(--muted); }
+code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .9em; }
+section { display: grid; gap: 14px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.sec-head code { color: var(--muted); }
+figure { margin: 0; display: grid; gap: 12px; }
+.canvas { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+svg { display: block; width: 100%; min-width: 860px; height: auto; color: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif; }
+figcaption { color: var(--muted); font-size: 14px; max-width: 80ch; }
+
+/* SVG roles */
+.box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.box-refuse { fill: var(--refuse-soft); stroke: var(--refuse); stroke-width: 1.5; }
+.box-store { fill: var(--store); stroke: var(--line); stroke-width: 1.5; }
+.box-side { fill: var(--bg); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.lane { fill: none; stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 6 4; }
+.t-title { fill: currentColor; font: 600 13px "IBM Plex Mono", ui-monospace, monospace; }
+.t-sub { fill: var(--muted); font-size: 11.5px; }
+.t-label { fill: var(--muted); font: 11px "IBM Plex Mono", ui-monospace, monospace; }
+.t-accent { fill: var(--accent); }
+.t-refuse { fill: var(--refuse); }
+.edge { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+.edge-accent { fill: none; stroke: var(--accent); stroke-width: 2; }
+.edge-refuse { fill: none; stroke: var(--refuse); stroke-width: 1.8; }
+.edge-dashed { fill: none; stroke: var(--muted); stroke-width: 1.3; stroke-dasharray: 5 4; }
+.bracket { fill: none; stroke: var(--line); stroke-width: 1.5; }
+.head { fill: var(--muted); }
+.head-accent { fill: var(--accent); }
+.head-refuse { fill: var(--refuse); }
+
+.knobs { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.knob { background: var(--surface); padding: 12px 14px; display: grid; gap: 2px; }
+.knob code { font-size: 12px; color: var(--muted); }
+.knob b { font: 500 16px "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.knob span { font-size: 13px; color: var(--muted); }
+.note { color: var(--muted); font-size: 14px; max-width: 80ch; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">System diagram · src/rag/</div>
+    <h1>AI History RAG Pipeline</h1>
+    <p class="lede">Two halves meet at one Chroma collection. Ingestion runs offline and only re-embeds documents whose fingerprint changed. Each question then runs through a four-node LangGraph flow that can refuse at two points, one of them before any LLM call.</p>
+  </header>
+
+  <section>
+    <div class="sec-head"><h2>1 · Ingestion (offline)</h2><code>uv run python -m rag.ingest</code></div>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1100 300" role="img" aria-label="Ingestion: the manifest of 55 documents is downloaded to data/raw, loaded and cleaned per format, split into 600-token chunks with a context header, embedded with text-embedding-3-small and stored as 1,145 vectors in Chroma. A per-document fingerprint skips unchanged documents.">
+          <defs>
+            <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="head"/></marker>
+          </defs>
+
+          <!-- brackets: which command owns which stages -->
+          <path class="bracket" d="M20 40V32H308V40"/>
+          <text class="t-label" x="164" y="24" text-anchor="middle">scripts/download_corpus.py</text>
+          <path class="bracket" d="M328 40V32H1078V40"/>
+          <text class="t-label" x="703" y="24" text-anchor="middle">python -m rag.ingest</text>
+
+          <!-- main row -->
+          <rect class="box" x="20" y="56" width="134" height="78" rx="4"/>
+          <text class="t-title" x="87" y="84" text-anchor="middle">manifest.yaml</text>
+          <text class="t-sub" x="87" y="103" text-anchor="middle">55 docs · 8 eras</text>
+          <text class="t-sub" x="87" y="119" text-anchor="middle">full metadata per doc</text>
+
+          <rect class="box" x="174" y="56" width="134" height="78" rx="4"/>
+          <text class="t-title" x="241" y="84" text-anchor="middle">download</text>
+          <text class="t-sub" x="241" y="103" text-anchor="middle">to data/raw/</text>
+          <text class="t-sub" x="241" y="119" text-anchor="middle">never committed</text>
+
+          <rect class="box" x="328" y="56" width="134" height="78" rx="4"/>
+          <text class="t-title" x="395" y="84" text-anchor="middle">load</text>
+          <text class="t-sub" x="395" y="103" text-anchor="middle">32 PDF · PyMuPDF</text>
+          <text class="t-sub" x="395" y="119" text-anchor="middle">19 wiki · 4 HTML</text>
+
+          <rect class="box" x="482" y="56" width="134" height="78" rx="4"/>
+          <text class="t-title" x="549" y="84" text-anchor="middle">clean</text>
+          <text class="t-sub" x="549" y="103" text-anchor="middle">drop headers, refs,</text>
+          <text class="t-sub" x="549" y="119" text-anchor="middle">nav · track page/section</text>
+
+          <rect class="box" x="636" y="56" width="134" height="78" rx="4"/>
+          <text class="t-title" x="703" y="84" text-anchor="middle">chunk</text>
+          <text class="t-sub" x="703" y="103" text-anchor="middle">600 tok · 90 overlap</text>
+          <text class="t-sub" x="703" y="119" text-anchor="middle">[Title (Year) | Sec] prefix</text>
+
+          <rect class="box-accent" x="790" y="56" width="134" height="78" rx="4"/>
+          <text class="t-title" x="857" y="84" text-anchor="middle">embed</text>
+          <text class="t-sub" x="857" y="103" text-anchor="middle">text-embedding-</text>
+          <text class="t-sub" x="857" y="119" text-anchor="middle">3-small</text>
+
+          <!-- Chroma cylinder -->
+          <path class="box-store" d="M944 64V126A67 9 0 0 0 1078 126V64"/>
+          <ellipse class="box-store" cx="1011" cy="64" rx="67" ry="9"/>
+          <text class="t-title" x="1011" y="94" text-anchor="middle">Chroma</text>
+          <text class="t-sub" x="1011" y="110" text-anchor="middle">ai_history · cosine</text>
+          <text class="t-sub" x="1011" y="126" text-anchor="middle">1,145 vectors</text>
+
+          <g class="edge" marker-end="url(#a1)">
+            <line x1="154" y1="95" x2="172" y2="95"/>
+            <line x1="308" y1="95" x2="326" y2="95"/>
+            <line x1="462" y1="95" x2="480" y2="95"/>
+            <line x1="616" y1="95" x2="634" y2="95"/>
+            <line x1="770" y1="95" x2="788" y2="95"/>
+            <line x1="924" y1="95" x2="942" y2="95"/>
+          </g>
+
+          <!-- side outputs -->
+          <rect class="box-side" x="626" y="206" width="154" height="62" rx="4"/>
+          <text class="t-title" x="703" y="231" text-anchor="middle">chunks.jsonl</text>
+          <text class="t-sub" x="703" y="250" text-anchor="middle">inspection · BM25 index</text>
+          <line class="edge-dashed" x1="703" y1="134" x2="703" y2="203" marker-end="url(#a1)"/>
+          <text class="t-label" x="697" y="174" text-anchor="end">every run</text>
+
+          <rect class="box-side" x="790" y="206" width="288" height="62" rx="4"/>
+          <text class="t-title" x="934" y="231" text-anchor="middle">index_state.json</text>
+          <text class="t-sub" x="934" y="250" text-anchor="middle">sha256(file + manifest entry + chunk config)</text>
+          <line class="edge-dashed" x1="857" y1="206" x2="857" y2="137" marker-end="url(#a1)"/>
+          <text class="t-label" x="865" y="168">skip if unchanged</text>
+          <text class="t-label" x="865" y="183">(--rebuild resets)</text>
+        </svg>
+      </div>
+      <figcaption>Every chunk keeps the full manifest metadata plus page and section, which is what the generator later prints as citations. Only documents with a new fingerprint are deleted and re-embedded, so adding one source costs one document's embeddings.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>2 · Answering a question (LangGraph)</h2><code>rag_graph.answer_question()</code></div>
+    <figure>
+      <div class="canvas">
+        <svg viewBox="0 0 1100 440" role="img" aria-label="Query flow: retrieve pulls the top 5 chunks from Chroma. A score gate refuses without an LLM call when the best similarity is below 0.35. Otherwise grade_evidence asks the LLM whether the chunks answer the question; if not, the flow refuses. If so, generate writes an answer citing numbered sources. A separate LLM-only baseline answers the same question with no retrieval.">
+          <defs>
+            <marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="head"/></marker>
+            <marker id="b2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="head-accent"/></marker>
+            <marker id="b3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="head-refuse"/></marker>
+          </defs>
+
+          <!-- Chroma store above retrieve -->
+          <path class="box-store" d="M175 30V78A75 9 0 0 0 325 78V30"/>
+          <ellipse class="box-store" cx="250" cy="30" rx="75" ry="9"/>
+          <text class="t-title" x="250" y="58" text-anchor="middle">Chroma</text>
+          <text class="t-sub" x="250" y="74" text-anchor="middle">from ingestion</text>
+
+          <line class="edge" x1="228" y1="128" x2="228" y2="90" marker-end="url(#b1)"/>
+          <text class="t-label" x="220" y="113" text-anchor="end">query vector</text>
+          <line class="edge" x1="272" y1="90" x2="272" y2="128" marker-end="url(#b1)"/>
+          <text class="t-label" x="280" y="113">5 chunks + 1−distance</text>
+
+          <!-- main row -->
+          <rect class="box" x="20" y="130" width="120" height="64" rx="32"/>
+          <text class="t-title" x="80" y="158" text-anchor="middle">question</text>
+          <text class="t-sub" x="80" y="176" text-anchor="middle">chat app · CLI</text>
+
+          <rect class="box" x="175" y="130" width="150" height="64" rx="4"/>
+          <text class="t-title" x="250" y="158" text-anchor="middle">retrieve</text>
+          <text class="t-sub" x="250" y="176" text-anchor="middle">TOP_K = 5 · "vector"</text>
+
+          <polygon class="box" points="355,162 412,118 469,162 412,206"/>
+          <text class="t-title" x="412" y="159" text-anchor="middle">score</text>
+          <text class="t-title" x="412" y="175" text-anchor="middle">gate</text>
+
+          <rect class="box" x="510" y="130" width="160" height="64" rx="4"/>
+          <text class="t-title" x="590" y="158" text-anchor="middle">grade_evidence</text>
+          <text class="t-sub" x="590" y="176" text-anchor="middle">LLM call 1 · structured</text>
+
+          <rect class="box-accent" x="730" y="130" width="150" height="64" rx="4"/>
+          <text class="t-title" x="805" y="158" text-anchor="middle">generate</text>
+          <text class="t-sub" x="805" y="176" text-anchor="middle">LLM call 2 · cite [n]</text>
+
+          <rect class="box" x="920" y="130" width="160" height="64" rx="4"/>
+          <text class="t-title" x="1000" y="158" text-anchor="middle">RAGState</text>
+          <text class="t-sub" x="1000" y="176" text-anchor="middle">answer · sources · timings</text>
+
+          <line class="edge" x1="140" y1="162" x2="173" y2="162" marker-end="url(#b1)"/>
+          <line class="edge-accent" x1="325" y1="162" x2="353" y2="162" marker-end="url(#b2)"/>
+          <line class="edge-accent" x1="469" y1="162" x2="508" y2="162" marker-end="url(#b2)"/>
+          <text class="t-label t-accent" x="489" y="150" text-anchor="middle">≥ 0.35</text>
+          <line class="edge-accent" x1="670" y1="162" x2="728" y2="162" marker-end="url(#b2)"/>
+          <text class="t-label t-accent" x="700" y="150" text-anchor="middle">sufficient</text>
+          <line class="edge-accent" x1="880" y1="162" x2="918" y2="162" marker-end="url(#b2)"/>
+          <text class="t-label t-accent" x="899" y="150" text-anchor="middle">cited</text>
+
+          <!-- refusal path -->
+          <rect class="box-refuse" x="470" y="262" width="180" height="56" rx="4"/>
+          <text class="t-title" x="560" y="286" text-anchor="middle">refuse</text>
+          <text class="t-sub" x="560" y="304" text-anchor="middle">fixed "insufficient evidence"</text>
+
+          <path class="edge-refuse" d="M412 206V290H468" marker-end="url(#b3)"/>
+          <text class="t-label t-refuse" x="420" y="232">&lt; 0.35</text>
+          <text class="t-label t-refuse" x="420" y="247">no LLM call</text>
+
+          <line class="edge-refuse" x1="620" y1="194" x2="620" y2="260" marker-end="url(#b3)"/>
+          <text class="t-label t-refuse" x="628" y="232">not sufficient</text>
+
+          <path class="edge-refuse" d="M650 290H1000V196" marker-end="url(#b3)"/>
+          <text class="t-label t-refuse" x="825" y="282" text-anchor="middle">refusal_stage = score_gate | evidence_check</text>
+
+          <!-- baseline lane -->
+          <rect class="lane" x="20" y="348" width="1060" height="72" rx="6"/>
+          <text class="t-title" x="40" y="380">LLM-only baseline</text>
+          <text class="t-sub" x="40" y="398">streamed side by side · baseline.py</text>
+
+          <rect class="box" x="240" y="364" width="170" height="40" rx="4"/>
+          <text class="t-title" x="325" y="389" text-anchor="middle">LLM_ONLY_PROMPT</text>
+          <rect class="box" x="450" y="364" width="150" height="40" rx="4"/>
+          <text class="t-title" x="525" y="389" text-anchor="middle">gpt-4.1-mini</text>
+          <rect class="box" x="640" y="364" width="240" height="40" rx="4"/>
+          <text class="t-sub" x="760" y="388" text-anchor="middle">answer from memory, no sources</text>
+          <line class="edge" x1="410" y1="384" x2="448" y2="384" marker-end="url(#b1)"/>
+          <line class="edge" x1="600" y1="384" x2="638" y2="384" marker-end="url(#b1)"/>
+        </svg>
+      </div>
+      <figcaption>The teal path is the happy path: two gpt-4.1-mini calls, with the generate call streaming its answer into the chat app next to the LLM-only baseline. Off-topic questions stop at the score gate for the cost of one embedding. Questions that are related but not in the corpus score high enough to pass, so the grader catches them. Only sources the answer actually cites as [n] come back in <code>sources</code>.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Tunables</h2><code>src/rag/config.py</code></div>
+    <div class="knobs">
+      <div class="knob"><code>CHUNK_SIZE_TOKENS / OVERLAP</code><b>600 / 90</b><span>cl100k_base tokens; median chunk 567</span></div>
+      <div class="knob"><code>CHUNK_CONTEXT_HEADER</code><b>True</b><span>title, year, section prepended before embedding</span></div>
+      <div class="knob"><code>TOP_K</code><b>5</b><span>chunks passed to grader and generator</span></div>
+      <div class="knob"><code>MIN_SIMILARITY</code><b>0.35</b><span>off-topic tops out near 0.21, answerable starts near 0.48</span></div>
+      <div class="knob"><code>CHAT_MODEL</code><b>gpt-4.1-mini</b><span>evidence check, answers, LLM-only baseline · temperature 0</span></div>
+      <div class="knob"><code>JUDGE_MODEL</code><b>gpt-4.1</b><span>evaluation only: a different, stronger model grades the answers</span></div>
+      <div class="knob"><code>EMBEDDING_MODEL</code><b>text-embedding-3-small</b><span>cosine space in Chroma</span></div>
+      <div class="knob"><code>DEFAULT_STRATEGY</code><b>vector</b><span>used by the chat; bm25 and hybrid can be compared in the RAG Lab</span></div>
+    </div>
+    <p class="note">BM25 keyword search and hybrid retrieval (Reciprocal Rank Fusion of BM25 + vector) already exist in <code>retrieve.py</code> and can be compared live in the RAG Lab. The chat keeps <code>"vector"</code> until an evaluation run shows a strategy is better. Reranking is not built yet. Any new strategy slots in inside <code>retrieve</code>, so the graph shape stays the same.</p>
+  </section>
+</div>
+

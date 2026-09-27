@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets
+.env
+
+# Corpus files and vector store (rebuilt by scripts; source PDFs are not redistributed)
+data/
+
+# Course lesson material (reference only, not part of this project)
+Mastering-Agentic-AI-Week2-Session1-main/
+
+.DS_Store
+
+# Streamlit secrets (API keys) and local tool settings
+.streamlit/secrets.toml
+.claude/

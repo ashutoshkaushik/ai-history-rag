@@ -1,0 +1,1745 @@
+{
+ "df493f03fbe802ca": {
+  "answer": "The Turing test was proposed by Alan Turing, and he originally called it the \"imitation game.\"",
+  "timings": {
+   "total_s": 0.669
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "b4b3751afac8d9f1": {
+  "answer": "The computer Deep Blue defeated world chess champion Garry Kasparov in 1997.",
+  "timings": {
+   "total_s": 0.684
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": []
+  }
+ },
+ "ed16f004661a69c5": {
+  "answer": "The term \"artificial intelligence\" was coined by John McCarthy in 1956 for the Dartmouth Conference, which is considered the founding event of AI as a field of study.",
+  "timings": {
+   "total_s": 0.88
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": [
+    "The term was coined in 1956, not 1955 as per the reference."
+   ]
+  }
+ },
+ "210fdb270a7a6430": {
+  "answer": "ELIZA was an early computer program created in the mid-1960s by Joseph Weizenbaum that simulated conversation by using pattern matching and substitution to mimic a Rogerian psychotherapist. It is considered one of the first chatbots.",
+  "timings": {
+   "total_s": 0.896
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true
+   ],
+   "coverage": 0.75,
+   "incorrect_claims": []
+  }
+ },
+ "bedfbe235d96f504": {
+  "answer": "The 'T' in GPT stands for \"Transformer.\" It was introduced in the paper \"Attention Is All You Need\" by Vaswani et al., 2017.",
+  "timings": {
+   "total_s": 1.152
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "e2769cec9dc05b44": {
+  "answer": "The training technique called **instruction fine-tuning** made models like ChatGPT follow instructions. This involves further training a pre-trained language model on a dataset of examples where inputs are paired with desired outputs framed as instructions, enabling the model to better understand and respond to user prompts.",
+  "timings": {
+   "total_s": 0.793
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "The candidate claims that 'instruction fine-tuning' is the training technique that made models like ChatGPT follow instructions, which contradicts the reference that specifies RLHF as the key technique."
+   ]
+  }
+ },
+ "5dcf8d5e78c29a7a": {
+  "answer": "Alan Turing predicted that by around the year 2000, computers would be able to simulate human intelligence to the extent that they could successfully imitate human conversation, effectively passing what is now known as the Turing Test.",
+  "timings": {
+   "total_s": 0.825
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": []
+  }
+ },
+ "1e92640a13a52d63": {
+  "answer": "The \"ELIZA effect\" refers to the tendency of people to attribute human-like understanding and emotions to computer programs, especially those that use simple pattern-matching techniques to simulate conversation. It was first demonstrated by Joseph Weizenbaum in the 1960s with his creation of ELIZA, an early natural language processing program that mimicked a Rogerian psychotherapist.",
+  "timings": {
+   "total_s": 0.857
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "003752b929e19b22": {
+  "answer": "The main causes of the first AI winter in the mid-1970s were overly optimistic expectations, limited computational power, and the failure of early AI programs to deliver practical results. Key factors included the collapse of funding following the 1973 Lighthill Report in the UK, which criticized AI research for its lack of real-world applications, and the general disappointment with the slow progress in natural language understanding and machine learning.",
+  "timings": {
+   "total_s": 0.98
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.2,
+   "incorrect_claims": []
+  }
+ },
+ "2a7cf87008aeba1f": {
+  "answer": "Minsky and Papert highlighted that perceptrons are limited in their inability to solve problems that are not linearly separable, such as the XOR problem.",
+  "timings": {
+   "total_s": 0.925
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "0b247386d7a1eb2d": {
+  "answer": "The MYCIN expert system was never used in clinical practice primarily because of legal and ethical concerns, including liability issues if the system made incorrect diagnoses or treatment recommendations. Additionally, it lacked integration with hospital information systems and faced resistance from clinicians who were hesitant to rely on computer-generated advice.",
+  "timings": {
+   "total_s": 0.763
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    true,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "d39477a34b0e5b3e": {
+  "answer": "AlexNet took about 5 to 6 days to train on two NVIDIA GTX 580 GPUs.",
+  "timings": {
+   "total_s": 0.657
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "9e24fd7d998dc0e7": {
+  "answer": "\"The Bitter Lesson\" in AI refers to the observation, articulated by AI researcher Richard Sutton, that the most significant advances in artificial intelligence have come from methods that leverage computation and general learning algorithms rather than from human-designed, domain-specific knowledge. In other words, over time, approaches that rely on scaling up computation and learning from data tend to outperform those based on handcrafted expertise, highlighting a \"bitter\" truth that human insight often yields less progress than leveraging raw computational power and general methods.",
+  "timings": {
+   "total_s": 1.055
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.4,
+   "incorrect_claims": []
+  }
+ },
+ "30a84166ea60d481": {
+  "answer": "The original Transformer got rid of recurrent and convolutional layers used in earlier sequence models, relying entirely on self-attention mechanisms to process sequences in parallel.",
+  "timings": {
+   "total_s": 0.506
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "20e5b2d97943ce45": {
+  "answer": "In the InstructGPT paper, people generally preferred the outputs of the smaller InstructGPT models over the much larger GPT-3 models because InstructGPT was fine-tuned to follow instructions better, resulting in more helpful and aligned responses despite its smaller size.",
+  "timings": {
+   "total_s": 0.718
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "cc4d25c759a36252": {
+  "answer": "The 1955 Dartmouth proposal requested $500.",
+  "timings": {
+   "total_s": 0.43
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "The 1955 Dartmouth proposal requested $500."
+   ]
+  }
+ },
+ "7b5ab0ecacba2f20": {
+  "answer": "Claude Shannon estimated that a machine would need to calculate on the order of 10^120 possible chess game variations from the initial position.",
+  "timings": {
+   "total_s": 0.591
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "fdc300cf29900ed0": {
+  "answer": "When ImageNet was first published in 2009, it contained over 3 million labeled images organized into roughly 12,000 categories (synsets).",
+  "timings": {
+   "total_s": 0.707
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": [
+    "roughly 12,000 categories (synsets)"
+   ]
+  }
+ },
+ "1d386c7aa30e7dab": {
+  "answer": "In the 1973 Lighthill Report, AI research was categorized into three areas:\n\n- **Category A:** Advanced automation, including robotics and sensory processing.\n- **Category B:** The study of computer-based models of human cognition and problem-solving.\n- **Category C:** The creation of programs that exhibit intelligent behavior in limited domains, such as theorem proving and language understanding.\n\nThe report was critical of the overall progress in AI, especially in categories A and B, but acknowledged some successes in category C.",
+  "timings": {
+   "total_s": 1.178
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": [
+    "Category B is described as the study of computer-based models of human cognition and problem-solving, which contradicts the reference that states B is Bridge activity / Building Robots (linking A and C).",
+    "Category C is described as the creation of programs that exhibit intelligent behavior in limited domains, such as theorem proving and language understanding, which contradicts the reference that states C is Computer-based CNS (central nervous system) research."
+   ]
+  }
+ },
+ "e0847857e9f5d58b": {
+  "answer": "James Lighthill blamed the general cause of AI research disappointments on the over-optimistic expectations and the failure to address the inherent complexity of intelligence, particularly the difficulty of scaling early AI methods to real-world problems.",
+  "timings": {
+   "total_s": 0.617
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "4f9ccc6bc618e08e": {
+  "answer": "The Chinchilla paper concluded that to optimize performance, model size and training data should be scaled together, with a focus on using more training data relative to model size than was common in previous large language models. Specifically, it found that smaller models trained on significantly more data outperform larger models trained on less data, suggesting that the optimal balance involves increasing the amount of training tokens proportionally more than model parameters.",
+  "timings": {
+   "total_s": 2.416
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false,
+    true
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": [
+    "The candidate states that the optimal balance involves increasing the amount of training tokens proportionally more than model parameters, which contradicts the reference that says model size and training tokens should be scaled equally."
+   ]
+  }
+ },
+ "cf566e95b1a33f66": {
+  "answer": "Sutherland disagreed with the Lighthill Report by arguing that the report was overly pessimistic about the prospects of artificial intelligence research. While Lighthill emphasized the failures and limitations of AI at the time, Sutherland believed that progress was being made and that the challenges identified could be overcome with continued research and development.",
+  "timings": {
+   "total_s": 0.948
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "The candidate states that Sutherland argued the report was overly pessimistic about AI prospects, which is consistent with challenging Lighthill's negative view but does not specifically address the classification or category B issues."
+   ]
+  }
+ },
+ "6d814bd0d9b011fb": {
+  "answer": "Weizenbaum's original ELIZA paper focused on the technical design and limitations of the program, emphasizing its role as a simple pattern-matching system without true understanding. In contrast, later accounts often highlight ELIZA's unexpected psychological impact on users, including their tendency to attribute human-like understanding and emotions to the program, which Weizenbaum himself found surprising and concerning.",
+  "timings": {
+   "total_s": 0.797
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "62324c1d24168ef1": {
+  "answer": "The 1955 Dartmouth proposal aimed to explore the possibility of creating machines that could simulate human intelligence, focusing on reasoning, language understanding, and learning. GPT-3, demonstrated in 2020, achieved significant advances in natural language processing, generating coherent and contextually relevant text, which aligns with the Dartmouth goal of language understanding and learning. However, GPT-3 operates primarily through pattern recognition in large datasets rather than explicit reasoning or symbolic manipulation envisioned in the original proposal. Thus, GPT-3 fulfills some but not all of the broad goals outlined at Dartmouth.",
+  "timings": {
+   "total_s": 1.126
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "e0cd9a46c617235d": {
+  "answer": "The Chinchilla paper revised the earlier Kaplan et al. scaling laws by showing that model performance depends more critically on the total amount of training compute being optimally allocated between model size and training dataset size. Unlike Kaplan et al., who suggested that increasing model size alone yields better performance, Chinchilla demonstrated that smaller models trained on much larger datasets achieve better results, emphasizing a balanced scaling approach rather than scaling model size disproportionately.",
+  "timings": {
+   "total_s": 1.049
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true
+   ],
+   "coverage": 0.75,
+   "incorrect_claims": []
+  }
+ },
+ "c8225fe6afe2209c": {
+  "answer": "From the 1950s to the 2010s, approaches to machine translation (MT) evolved significantly:\n\n- **1950s-1960s:** Early MT efforts were rule-based, relying on hand-coded linguistic rules and bilingual dictionaries. These systems were limited and often produced poor-quality translations due to the complexity of language.\n\n- **1970s-1980s:** Continued development of rule-based MT with more sophisticated linguistic analysis, including syntax and semantics, but still faced scalability and ambiguity challenges.\n\n- **1990s:** Shift toward **statistical machine translation (SMT)**, which used large bilingual corpora to learn translation probabilities automatically, improving fluency and adaptability without extensive manual rules.\n\n- **2000s:** SMT became dominant, with models like phrase-based SMT enhancing translation quality by considering sequences of words rather than individual words.\n\n- **2010s:** Emergence of **neural machine translation (NMT)**, leveraging deep learning and neural networks to model entire sentences as continuous vectors, resulting in more natural and accurate translations. NMT rapidly surpassed SMT in performance by the late 2010s.\n\nIn summary, MT evolved from rule-based, manually crafted systems to data-driven statistical models, and finally to neural network-based approaches that significantly improved translation quality and fluency.",
+  "timings": {
+   "total_s": 1.859
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.4,
+   "incorrect_claims": []
+  }
+ },
+ "0235613d3c8d145e": {
+  "answer": "The two major AI winters occurred in the mid-1970s and the late 1980s to early 1990s.",
+  "timings": {
+   "total_s": 0.689
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": [
+    "The two major AI winters occurred in the mid-1970s and the late 1980s to early 1990s."
+   ]
+  }
+ },
+ "ab7fc384815a6729": {
+  "answer": "Key developments between 2012 and 2017 that led from AlexNet to the Transformer include:\n\n1. **Advances in Convolutional Neural Networks (CNNs):** After AlexNet (2012) demonstrated the power of deep CNNs for image recognition, architectures like VGG (2014), GoogLeNet/Inception (2014), and ResNet (2015) improved depth, efficiency, and training stability, solidifying CNNs as the dominant model for visual tasks.\n\n2. **Rise of Recurrent Neural Networks (RNNs) and LSTMs:** For sequential data like language, RNNs and especially LSTMs became standard for tasks such as machine translation and speech recognition, enabling models to capture temporal dependencies.\n\n3. **Attention Mechanisms (2014-2015):** The introduction of attention mechanisms, notably in sequence-to-sequence models for machine translation (Bahdanau et al., 2015), allowed models to focus on relevant parts of input sequences dynamically, improving performance over pure RNNs.\n\n4. **Self-Attention and Non-Recurrent Architectures:** Building on attention, researchers explored self-attention mechanisms that relate different positions within a single sequence without recurrence, setting the stage for fully attention-based models.\n\n5. **Transformer Architecture (2017):** Vaswani et al. introduced the Transformer, which replaced recurrence with multi-head self-attention and positional encoding, enabling more parallelization and better long-range dependency modeling in NLP tasks.\n\nIn summary, the progression from AlexNet to the Transformer involved moving from deep CNNs for images to attention-based models for sequences, with key innovations in attention mechanisms and architectural design enabling the Transformer’s success.",
+  "timings": {
+   "total_s": 2.838
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 0.8333333333333334,
+   "incorrect_claims": []
+  }
+ },
+ "1e4372548b273e13": {
+  "answer": "Alan Turing died in 1954, long before ChatGPT was developed, so he did not have any thoughts about ChatGPT specifically.",
+  "timings": {
+   "total_s": 0.599
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "ada8b59e690b4bd8": {
+  "answer": "The chatbot claimed to have passed the Turing test in 2014 was \"Eugene Goostman.\"",
+  "timings": {
+   "total_s": 0.705
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "94e6c4104a3b88b8": {
+  "answer": "Generative adversarial networks (GANs) were invented by Ian Goodfellow and his colleagues in 2014.",
+  "timings": {
+   "total_s": 0.639
+  },
+  "grade": {
+   "declined": true,
+   "verdict": "declined",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "cddb8a642f575064": {
+  "answer": "The Loebner Prize is an annual competition that awards the most human-like computer program in a Turing Test-style contest, where AI chatbots attempt to convince judges they are human through conversation. It was established in 1990 by Hugh Loebner.",
+  "timings": {
+   "total_s": 0.984
+  },
+  "grade": {
+   "declined": true,
+   "verdict": "declined",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "f2070a423297e3fa": {
+  "answer": "Pluto was discovered by Clyde Tombaugh in 1930.",
+  "timings": {
+   "total_s": 0.594
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "fb46eaf602619398": {
+  "answer": "When Galileo pointed his telescope at Jupiter in 1610, he discovered four moons orbiting the planet, now known as the Galilean moons: Io, Europa, Ganymede, and Callisto.",
+  "timings": {
+   "total_s": 0.799
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "4663dbc3e0cadc14": {
+  "answer": "The Turing test was proposed by Alan Turing, and he originally called it the \"imitation game.\"",
+  "timings": {
+   "total_s": 0.669
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "d106e63f3f5c07c8": {
+  "answer": "The computer Deep Blue defeated world chess champion Garry Kasparov in 1997.",
+  "timings": {
+   "total_s": 0.684
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": []
+  }
+ },
+ "f75f6468836ddad6": {
+  "answer": "The term \"artificial intelligence\" was coined by John McCarthy in 1956 for the Dartmouth Conference, which is considered the founding event of AI as a field of study.",
+  "timings": {
+   "total_s": 0.88
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": [
+    "The term 'artificial intelligence' was coined by John McCarthy in 1956 for the Dartmouth Conference."
+   ]
+  }
+ },
+ "ee3fdc6a41714d6e": {
+  "answer": "ELIZA was an early computer program created in the mid-1960s by Joseph Weizenbaum that simulated conversation by using pattern matching and substitution to mimic a Rogerian psychotherapist. It is considered one of the first chatbots.",
+  "timings": {
+   "total_s": 0.896
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true
+   ],
+   "coverage": 0.75,
+   "incorrect_claims": []
+  }
+ },
+ "305130f284a08955": {
+  "answer": "The 'T' in GPT stands for \"Transformer.\" It was introduced in the paper \"Attention Is All You Need\" by Vaswani et al., 2017.",
+  "timings": {
+   "total_s": 1.152
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "4361ad18f0b3536e": {
+  "answer": "The training technique called **instruction fine-tuning** made models like ChatGPT follow instructions. This involves further training a pre-trained language model on a dataset of examples where inputs are paired with desired outputs framed as instructions, enabling the model to better understand and respond to user prompts.",
+  "timings": {
+   "total_s": 0.793
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "Instruction fine-tuning alone made models like ChatGPT follow instructions (it was RLHF, not just instruction fine-tuning)."
+   ]
+  }
+ },
+ "d4e082b7fdfbd23e": {
+  "answer": "Alan Turing predicted that by around the year 2000, computers would be able to simulate human intelligence to the extent that they could successfully imitate human conversation, effectively passing what is now known as the Turing Test.",
+  "timings": {
+   "total_s": 0.825
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.25,
+   "incorrect_claims": []
+  }
+ },
+ "806a1d69b6ecc963": {
+  "answer": "The \"ELIZA effect\" refers to the tendency of people to attribute human-like understanding and emotions to computer programs, especially those that use simple pattern-matching techniques to simulate conversation. It was first demonstrated by Joseph Weizenbaum in the 1960s with his creation of ELIZA, an early natural language processing program that mimicked a Rogerian psychotherapist.",
+  "timings": {
+   "total_s": 0.857
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "4d806caec54ee614": {
+  "answer": "The main causes of the first AI winter in the mid-1970s were overly optimistic expectations, limited computational power, and the failure of early AI programs to deliver practical results. Key factors included the collapse of funding following the 1973 Lighthill Report in the UK, which criticized AI research for its lack of real-world applications, and the general disappointment with the slow progress in natural language understanding and machine learning.",
+  "timings": {
+   "total_s": 0.98
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.2,
+   "incorrect_claims": []
+  }
+ },
+ "7a0255a0c4d9ba00": {
+  "answer": "Minsky and Papert highlighted that perceptrons are limited in their inability to solve problems that are not linearly separable, such as the XOR problem.",
+  "timings": {
+   "total_s": 0.925
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "e6fd54b907b8245e": {
+  "answer": "The MYCIN expert system was never used in clinical practice primarily because of legal and ethical concerns, including liability issues if the system made incorrect diagnoses or treatment recommendations. Additionally, it lacked integration with hospital information systems and faced resistance from clinicians who were hesitant to rely on computer-generated advice.",
+  "timings": {
+   "total_s": 0.763
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    true,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "8b584aee78286c8e": {
+  "answer": "AlexNet took about 5 to 6 days to train on two NVIDIA GTX 580 GPUs.",
+  "timings": {
+   "total_s": 0.657
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "45c315a02e5bdf6e": {
+  "answer": "\"The Bitter Lesson\" in AI refers to the observation, articulated by AI researcher Richard Sutton, that the most significant advances in artificial intelligence have come from methods that leverage computation and general learning algorithms rather than from human-designed, domain-specific knowledge. In other words, over time, approaches that rely on scaling up computation and learning from data tend to outperform those based on handcrafted expertise, highlighting a \"bitter\" truth that human insight often yields less progress than leveraging raw computational power and general methods.",
+  "timings": {
+   "total_s": 1.055
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.6,
+   "incorrect_claims": []
+  }
+ },
+ "4470ad2c4add67ea": {
+  "answer": "The original Transformer got rid of recurrent and convolutional layers used in earlier sequence models, relying entirely on self-attention mechanisms to process sequences in parallel.",
+  "timings": {
+   "total_s": 0.506
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "26e01785a5681ff0": {
+  "answer": "In the InstructGPT paper, people generally preferred the outputs of the smaller InstructGPT models over the much larger GPT-3 models because InstructGPT was fine-tuned to follow instructions better, resulting in more helpful and aligned responses despite its smaller size.",
+  "timings": {
+   "total_s": 0.718
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "01e90754baadc2a1": {
+  "answer": "The 1955 Dartmouth proposal requested $500.",
+  "timings": {
+   "total_s": 0.43
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "The 1955 Dartmouth proposal requested $500."
+   ]
+  }
+ },
+ "e3f796472167d73f": {
+  "answer": "Claude Shannon estimated that a machine would need to calculate on the order of 10^120 possible chess game variations from the initial position.",
+  "timings": {
+   "total_s": 0.591
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "d3ae50050b5b5a84": {
+  "answer": "When ImageNet was first published in 2009, it contained over 3 million labeled images organized into roughly 12,000 categories (synsets).",
+  "timings": {
+   "total_s": 0.707
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": [
+    "ImageNet contained roughly 12,000 categories (synsets) when first published in 2009."
+   ]
+  }
+ },
+ "f50b5015cc50bac9": {
+  "answer": "In the 1973 Lighthill Report, AI research was categorized into three areas:\n\n- **Category A:** Advanced automation, including robotics and sensory processing.\n- **Category B:** The study of computer-based models of human cognition and problem-solving.\n- **Category C:** The creation of programs that exhibit intelligent behavior in limited domains, such as theorem proving and language understanding.\n\nThe report was critical of the overall progress in AI, especially in categories A and B, but acknowledged some successes in category C.",
+  "timings": {
+   "total_s": 1.178
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": [
+    "Category B is described as 'the study of computer-based models of human cognition and problem-solving', which does not match the reference definition of 'Bridge activity / Building Robots'.",
+    "Category C is described as 'the creation of programs that exhibit intelligent behavior in limited domains, such as theorem proving and language understanding', which does not match the reference definition of 'Computer-based CNS (central nervous system) research'.",
+    "The report was critical of the overall progress in AI, especially in categories A and B, but acknowledged some successes in category C. (The Lighthill Report was actually most critical of category C, not A and B.)"
+   ]
+  }
+ },
+ "73da28529de7e700": {
+  "answer": "James Lighthill blamed the general cause of AI research disappointments on the over-optimistic expectations and the failure to address the inherent complexity of intelligence, particularly the difficulty of scaling early AI methods to real-world problems.",
+  "timings": {
+   "total_s": 0.617
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "671fbc9539cd73b0": {
+  "answer": "The Chinchilla paper concluded that to optimize performance, model size and training data should be scaled together, with a focus on using more training data relative to model size than was common in previous large language models. Specifically, it found that smaller models trained on significantly more data outperform larger models trained on less data, suggesting that the optimal balance involves increasing the amount of training tokens proportionally more than model parameters.",
+  "timings": {
+   "total_s": 2.416
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "> the optimal balance involves increasing the amount of training tokens proportionally more than model parameters."
+   ]
+  }
+ },
+ "28daa176b7aa6053": {
+  "answer": "Sutherland disagreed with the Lighthill Report by arguing that the report was overly pessimistic about the prospects of artificial intelligence research. While Lighthill emphasized the failures and limitations of AI at the time, Sutherland believed that progress was being made and that the challenges identified could be overcome with continued research and development.",
+  "timings": {
+   "total_s": 0.948
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false,
+    false,
+    false,
+    true
+   ],
+   "coverage": 0.25,
+   "incorrect_claims": []
+  }
+ },
+ "18b1aef5f31485f1": {
+  "answer": "Weizenbaum's original ELIZA paper focused on the technical design and limitations of the program, emphasizing its role as a simple pattern-matching system without true understanding. In contrast, later accounts often highlight ELIZA's unexpected psychological impact on users, including their tendency to attribute human-like understanding and emotions to the program, which Weizenbaum himself found surprising and concerning.",
+  "timings": {
+   "total_s": 0.797
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "41410c4f36f154d2": {
+  "answer": "The 1955 Dartmouth proposal aimed to explore the possibility of creating machines that could simulate human intelligence, focusing on reasoning, language understanding, and learning. GPT-3, demonstrated in 2020, achieved significant advances in natural language processing, generating coherent and contextually relevant text, which aligns with the Dartmouth goal of language understanding and learning. However, GPT-3 operates primarily through pattern recognition in large datasets rather than explicit reasoning or symbolic manipulation envisioned in the original proposal. Thus, GPT-3 fulfills some but not all of the broad goals outlined at Dartmouth.",
+  "timings": {
+   "total_s": 1.126
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "2964e4efe188ffa8": {
+  "answer": "The Chinchilla paper revised the earlier Kaplan et al. scaling laws by showing that model performance depends more critically on the total amount of training compute being optimally allocated between model size and training dataset size. Unlike Kaplan et al., who suggested that increasing model size alone yields better performance, Chinchilla demonstrated that smaller models trained on much larger datasets achieve better results, emphasizing a balanced scaling approach rather than scaling model size disproportionately.",
+  "timings": {
+   "total_s": 1.049
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": []
+  }
+ },
+ "8449c3966a352e53": {
+  "answer": "From the 1950s to the 2010s, approaches to machine translation (MT) evolved significantly:\n\n- **1950s-1960s:** Early MT efforts were rule-based, relying on hand-coded linguistic rules and bilingual dictionaries. These systems were limited and often produced poor-quality translations due to the complexity of language.\n\n- **1970s-1980s:** Continued development of rule-based MT with more sophisticated linguistic analysis, including syntax and semantics, but still faced scalability and ambiguity challenges.\n\n- **1990s:** Shift toward **statistical machine translation (SMT)**, which used large bilingual corpora to learn translation probabilities automatically, improving fluency and adaptability without extensive manual rules.\n\n- **2000s:** SMT became dominant, with models like phrase-based SMT enhancing translation quality by considering sequences of words rather than individual words.\n\n- **2010s:** Emergence of **neural machine translation (NMT)**, leveraging deep learning and neural networks to model entire sentences as continuous vectors, resulting in more natural and accurate translations. NMT rapidly surpassed SMT in performance by the late 2010s.\n\nIn summary, MT evolved from rule-based, manually crafted systems to data-driven statistical models, and finally to neural network-based approaches that significantly improved translation quality and fluency.",
+  "timings": {
+   "total_s": 1.859
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.4,
+   "incorrect_claims": []
+  }
+ },
+ "90b8b71a58e22da2": {
+  "answer": "The two major AI winters occurred in the mid-1970s and the late 1980s to early 1990s.",
+  "timings": {
+   "total_s": 0.689
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "cf89e3ca07a566b3": {
+  "answer": "Key developments between 2012 and 2017 that led from AlexNet to the Transformer include:\n\n1. **Advances in Convolutional Neural Networks (CNNs):** After AlexNet (2012) demonstrated the power of deep CNNs for image recognition, architectures like VGG (2014), GoogLeNet/Inception (2014), and ResNet (2015) improved depth, efficiency, and training stability, solidifying CNNs as the dominant model for visual tasks.\n\n2. **Rise of Recurrent Neural Networks (RNNs) and LSTMs:** For sequential data like language, RNNs and especially LSTMs became standard for tasks such as machine translation and speech recognition, enabling models to capture temporal dependencies.\n\n3. **Attention Mechanisms (2014-2015):** The introduction of attention mechanisms, notably in sequence-to-sequence models for machine translation (Bahdanau et al., 2015), allowed models to focus on relevant parts of input sequences dynamically, improving performance over pure RNNs.\n\n4. **Self-Attention and Non-Recurrent Architectures:** Building on attention, researchers explored self-attention mechanisms that relate different positions within a single sequence without recurrence, setting the stage for fully attention-based models.\n\n5. **Transformer Architecture (2017):** Vaswani et al. introduced the Transformer, which replaced recurrence with multi-head self-attention and positional encoding, enabling more parallelization and better long-range dependency modeling in NLP tasks.\n\nIn summary, the progression from AlexNet to the Transformer involved moving from deep CNNs for images to attention-based models for sequences, with key innovations in attention mechanisms and architectural design enabling the Transformer’s success.",
+  "timings": {
+   "total_s": 2.838
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 0.8333333333333334,
+   "incorrect_claims": []
+  }
+ },
+ "f42e03399e2f7646": {
+  "answer": "Alan Turing died in 1954, long before ChatGPT was developed, so he did not have any thoughts about ChatGPT specifically.",
+  "timings": {
+   "total_s": 0.599
+  },
+  "grade": {
+   "declined": true,
+   "verdict": "declined",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "c19bdc0b50f00eb0": {
+  "answer": "The chatbot claimed to have passed the Turing test in 2014 was \"Eugene Goostman.\"",
+  "timings": {
+   "total_s": 0.705
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "13b680e2a85ab711": {
+  "answer": "Generative adversarial networks (GANs) were invented by Ian Goodfellow and his colleagues in 2014.",
+  "timings": {
+   "total_s": 0.639
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "fc433553673d010a": {
+  "answer": "The Loebner Prize is an annual competition that awards the most human-like computer program in a Turing Test-style contest, where AI chatbots attempt to convince judges they are human through conversation. It was established in 1990 by Hugh Loebner.",
+  "timings": {
+   "total_s": 0.984
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "946487dac39f1bd4": {
+  "answer": "Pluto was discovered by Clyde Tombaugh in 1930.",
+  "timings": {
+   "total_s": 0.594
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "6eaab95d06f90820": {
+  "answer": "When Galileo pointed his telescope at Jupiter in 1610, he discovered four moons orbiting the planet, now known as the Galilean moons: Io, Europa, Ganymede, and Callisto.",
+  "timings": {
+   "total_s": 0.799
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "613d13267319bd16": {
+  "answer": "The Turing test was proposed by Alan Turing, and he originally called it the \"imitation game.\"",
+  "timings": {
+   "total_s": 0.669
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "e84499e9801db854": {
+  "answer": "The computer Deep Blue defeated world chess champion Garry Kasparov in 1997.",
+  "timings": {
+   "total_s": 0.684
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": []
+  }
+ },
+ "07d073428ea53235": {
+  "answer": "The term \"artificial intelligence\" was coined by John McCarthy in 1956 for the Dartmouth Conference, which is considered the founding event of AI as a field of study.",
+  "timings": {
+   "total_s": 0.88
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": [
+    "The term 'artificial intelligence' was coined by John McCarthy in 1956 for the Dartmouth Conference"
+   ]
+  }
+ },
+ "aa1f04fc2f0efcbb": {
+  "answer": "ELIZA was an early computer program created in the mid-1960s by Joseph Weizenbaum that simulated conversation by using pattern matching and substitution to mimic a Rogerian psychotherapist. It is considered one of the first chatbots.",
+  "timings": {
+   "total_s": 0.896
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true
+   ],
+   "coverage": 0.75,
+   "incorrect_claims": []
+  }
+ },
+ "cbc36401ab9a9873": {
+  "answer": "The 'T' in GPT stands for \"Transformer.\" It was introduced in the paper \"Attention Is All You Need\" by Vaswani et al., 2017.",
+  "timings": {
+   "total_s": 1.152
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "9c3f8358004b6b88": {
+  "answer": "The training technique called **instruction fine-tuning** made models like ChatGPT follow instructions. This involves further training a pre-trained language model on a dataset of examples where inputs are paired with desired outputs framed as instructions, enabling the model to better understand and respond to user prompts.",
+  "timings": {
+   "total_s": 0.793
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": []
+  }
+ },
+ "e06db162caedbd8e": {
+  "answer": "Alan Turing predicted that by around the year 2000, computers would be able to simulate human intelligence to the extent that they could successfully imitate human conversation, effectively passing what is now known as the Turing Test.",
+  "timings": {
+   "total_s": 0.825
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.25,
+   "incorrect_claims": []
+  }
+ },
+ "6bc789e458bdaadb": {
+  "answer": "The \"ELIZA effect\" refers to the tendency of people to attribute human-like understanding and emotions to computer programs, especially those that use simple pattern-matching techniques to simulate conversation. It was first demonstrated by Joseph Weizenbaum in the 1960s with his creation of ELIZA, an early natural language processing program that mimicked a Rogerian psychotherapist.",
+  "timings": {
+   "total_s": 0.857
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "766b3fc3788f9ff5": {
+  "answer": "The main causes of the first AI winter in the mid-1970s were overly optimistic expectations, limited computational power, and the failure of early AI programs to deliver practical results. Key factors included the collapse of funding following the 1973 Lighthill Report in the UK, which criticized AI research for its lack of real-world applications, and the general disappointment with the slow progress in natural language understanding and machine learning.",
+  "timings": {
+   "total_s": 0.98
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.2,
+   "incorrect_claims": []
+  }
+ },
+ "6fac6c09da64e40f": {
+  "answer": "Minsky and Papert highlighted that perceptrons are limited in their inability to solve problems that are not linearly separable, such as the XOR problem.",
+  "timings": {
+   "total_s": 0.925
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "5d92285f1953e605": {
+  "answer": "The MYCIN expert system was never used in clinical practice primarily because of legal and ethical concerns, including liability issues if the system made incorrect diagnoses or treatment recommendations. Additionally, it lacked integration with hospital information systems and faced resistance from clinicians who were hesitant to rely on computer-generated advice.",
+  "timings": {
+   "total_s": 0.763
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    true,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "9a87083b4a8074f3": {
+  "answer": "AlexNet took about 5 to 6 days to train on two NVIDIA GTX 580 GPUs.",
+  "timings": {
+   "total_s": 0.657
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "4c04ded8dfecfe44": {
+  "answer": "\"The Bitter Lesson\" in AI refers to the observation, articulated by AI researcher Richard Sutton, that the most significant advances in artificial intelligence have come from methods that leverage computation and general learning algorithms rather than from human-designed, domain-specific knowledge. In other words, over time, approaches that rely on scaling up computation and learning from data tend to outperform those based on handcrafted expertise, highlighting a \"bitter\" truth that human insight often yields less progress than leveraging raw computational power and general methods.",
+  "timings": {
+   "total_s": 1.055
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.6,
+   "incorrect_claims": []
+  }
+ },
+ "adc9930b84e4eefd": {
+  "answer": "The original Transformer got rid of recurrent and convolutional layers used in earlier sequence models, relying entirely on self-attention mechanisms to process sequences in parallel.",
+  "timings": {
+   "total_s": 0.506
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "df2e0e89e1b66ada": {
+  "answer": "In the InstructGPT paper, people generally preferred the outputs of the smaller InstructGPT models over the much larger GPT-3 models because InstructGPT was fine-tuned to follow instructions better, resulting in more helpful and aligned responses despite its smaller size.",
+  "timings": {
+   "total_s": 0.718
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "81abc0eee3dd6295": {
+  "answer": "The 1955 Dartmouth proposal requested $500.",
+  "timings": {
+   "total_s": 0.43
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "The 1955 Dartmouth proposal requested $500."
+   ]
+  }
+ },
+ "f91e6833cabac6d3": {
+  "answer": "Claude Shannon estimated that a machine would need to calculate on the order of 10^120 possible chess game variations from the initial position.",
+  "timings": {
+   "total_s": 0.591
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": []
+  }
+ },
+ "9fe4d57d51d71599": {
+  "answer": "When ImageNet was first published in 2009, it contained over 3 million labeled images organized into roughly 12,000 categories (synsets).",
+  "timings": {
+   "total_s": 0.707
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": [
+    "organized into roughly 12,000 categories (synsets)"
+   ]
+  }
+ },
+ "b5efff84fb37ff3f": {
+  "answer": "In the 1973 Lighthill Report, AI research was categorized into three areas:\n\n- **Category A:** Advanced automation, including robotics and sensory processing.\n- **Category B:** The study of computer-based models of human cognition and problem-solving.\n- **Category C:** The creation of programs that exhibit intelligent behavior in limited domains, such as theorem proving and language understanding.\n\nThe report was critical of the overall progress in AI, especially in categories A and B, but acknowledged some successes in category C.",
+  "timings": {
+   "total_s": 1.178
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    true,
+    false,
+    false
+   ],
+   "coverage": 0.3333333333333333,
+   "incorrect_claims": [
+    "Category B: The study of computer-based models of human cognition and problem-solving.",
+    "Category C: The creation of programs that exhibit intelligent behavior in limited domains, such as theorem proving and language understanding."
+   ]
+  }
+ },
+ "5f829d0521d136c7": {
+  "answer": "James Lighthill blamed the general cause of AI research disappointments on the over-optimistic expectations and the failure to address the inherent complexity of intelligence, particularly the difficulty of scaling early AI methods to real-world problems.",
+  "timings": {
+   "total_s": 0.617
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "48590d59a6c3311c": {
+  "answer": "The Chinchilla paper concluded that to optimize performance, model size and training data should be scaled together, with a focus on using more training data relative to model size than was common in previous large language models. Specifically, it found that smaller models trained on significantly more data outperform larger models trained on less data, suggesting that the optimal balance involves increasing the amount of training tokens proportionally more than model parameters.",
+  "timings": {
+   "total_s": 2.416
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "incorrect",
+   "key_facts_present": [
+    false,
+    false,
+    false,
+    false
+   ],
+   "coverage": 0.0,
+   "incorrect_claims": [
+    "the optimal balance involves increasing the amount of training tokens proportionally more than model parameters"
+   ]
+  }
+ },
+ "30a4bedcd768fca3": {
+  "answer": "Sutherland disagreed with the Lighthill Report by arguing that the report was overly pessimistic about the prospects of artificial intelligence research. While Lighthill emphasized the failures and limitations of AI at the time, Sutherland believed that progress was being made and that the challenges identified could be overcome with continued research and development.",
+  "timings": {
+   "total_s": 0.948
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    false,
+    true
+   ],
+   "coverage": 0.25,
+   "incorrect_claims": []
+  }
+ },
+ "edf741d742a93ac7": {
+  "answer": "Weizenbaum's original ELIZA paper focused on the technical design and limitations of the program, emphasizing its role as a simple pattern-matching system without true understanding. In contrast, later accounts often highlight ELIZA's unexpected psychological impact on users, including their tendency to attribute human-like understanding and emotions to the program, which Weizenbaum himself found surprising and concerning.",
+  "timings": {
+   "total_s": 0.797
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "05a77055404ba7e4": {
+  "answer": "The 1955 Dartmouth proposal aimed to explore the possibility of creating machines that could simulate human intelligence, focusing on reasoning, language understanding, and learning. GPT-3, demonstrated in 2020, achieved significant advances in natural language processing, generating coherent and contextually relevant text, which aligns with the Dartmouth goal of language understanding and learning. However, GPT-3 operates primarily through pattern recognition in large datasets rather than explicit reasoning or symbolic manipulation envisioned in the original proposal. Thus, GPT-3 fulfills some but not all of the broad goals outlined at Dartmouth.",
+  "timings": {
+   "total_s": 1.126
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true
+   ],
+   "coverage": 0.6666666666666666,
+   "incorrect_claims": []
+  }
+ },
+ "a22d6ea85b5f912f": {
+  "answer": "The Chinchilla paper revised the earlier Kaplan et al. scaling laws by showing that model performance depends more critically on the total amount of training compute being optimally allocated between model size and training dataset size. Unlike Kaplan et al., who suggested that increasing model size alone yields better performance, Chinchilla demonstrated that smaller models trained on much larger datasets achieve better results, emphasizing a balanced scaling approach rather than scaling model size disproportionately.",
+  "timings": {
+   "total_s": 1.049
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    false
+   ],
+   "coverage": 0.5,
+   "incorrect_claims": []
+  }
+ },
+ "0012e8b1bb95656d": {
+  "answer": "From the 1950s to the 2010s, approaches to machine translation (MT) evolved significantly:\n\n- **1950s-1960s:** Early MT efforts were rule-based, relying on hand-coded linguistic rules and bilingual dictionaries. These systems were limited and often produced poor-quality translations due to the complexity of language.\n\n- **1970s-1980s:** Continued development of rule-based MT with more sophisticated linguistic analysis, including syntax and semantics, but still faced scalability and ambiguity challenges.\n\n- **1990s:** Shift toward **statistical machine translation (SMT)**, which used large bilingual corpora to learn translation probabilities automatically, improving fluency and adaptability without extensive manual rules.\n\n- **2000s:** SMT became dominant, with models like phrase-based SMT enhancing translation quality by considering sequences of words rather than individual words.\n\n- **2010s:** Emergence of **neural machine translation (NMT)**, leveraging deep learning and neural networks to model entire sentences as continuous vectors, resulting in more natural and accurate translations. NMT rapidly surpassed SMT in performance by the late 2010s.\n\nIn summary, MT evolved from rule-based, manually crafted systems to data-driven statistical models, and finally to neural network-based approaches that significantly improved translation quality and fluency.",
+  "timings": {
+   "total_s": 1.859
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    false,
+    false,
+    true,
+    true,
+    false
+   ],
+   "coverage": 0.4,
+   "incorrect_claims": []
+  }
+ },
+ "40fa213c42303382": {
+  "answer": "The two major AI winters occurred in the mid-1970s and the late 1980s to early 1990s.",
+  "timings": {
+   "total_s": 0.689
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "correct",
+   "key_facts_present": [
+    true,
+    true
+   ],
+   "coverage": 1.0,
+   "incorrect_claims": []
+  }
+ },
+ "ff174652abd80698": {
+  "answer": "Key developments between 2012 and 2017 that led from AlexNet to the Transformer include:\n\n1. **Advances in Convolutional Neural Networks (CNNs):** After AlexNet (2012) demonstrated the power of deep CNNs for image recognition, architectures like VGG (2014), GoogLeNet/Inception (2014), and ResNet (2015) improved depth, efficiency, and training stability, solidifying CNNs as the dominant model for visual tasks.\n\n2. **Rise of Recurrent Neural Networks (RNNs) and LSTMs:** For sequential data like language, RNNs and especially LSTMs became standard for tasks such as machine translation and speech recognition, enabling models to capture temporal dependencies.\n\n3. **Attention Mechanisms (2014-2015):** The introduction of attention mechanisms, notably in sequence-to-sequence models for machine translation (Bahdanau et al., 2015), allowed models to focus on relevant parts of input sequences dynamically, improving performance over pure RNNs.\n\n4. **Self-Attention and Non-Recurrent Architectures:** Building on attention, researchers explored self-attention mechanisms that relate different positions within a single sequence without recurrence, setting the stage for fully attention-based models.\n\n5. **Transformer Architecture (2017):** Vaswani et al. introduced the Transformer, which replaced recurrence with multi-head self-attention and positional encoding, enabling more parallelization and better long-range dependency modeling in NLP tasks.\n\nIn summary, the progression from AlexNet to the Transformer involved moving from deep CNNs for images to attention-based models for sequences, with key innovations in attention mechanisms and architectural design enabling the Transformer’s success.",
+  "timings": {
+   "total_s": 2.838
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "partial",
+   "key_facts_present": [
+    true,
+    false,
+    true,
+    true,
+    true,
+    true
+   ],
+   "coverage": 0.8333333333333334,
+   "incorrect_claims": []
+  }
+ },
+ "4503f6368b6fec7c": {
+  "answer": "Alan Turing died in 1954, long before ChatGPT was developed, so he did not have any thoughts about ChatGPT specifically.",
+  "timings": {
+   "total_s": 0.599
+  },
+  "grade": {
+   "declined": true,
+   "verdict": "declined",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "f16f0e1903f6d20b": {
+  "answer": "The chatbot claimed to have passed the Turing test in 2014 was \"Eugene Goostman.\"",
+  "timings": {
+   "total_s": 0.705
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "e9e0de54d6aa5bdd": {
+  "answer": "Generative adversarial networks (GANs) were invented by Ian Goodfellow and his colleagues in 2014.",
+  "timings": {
+   "total_s": 0.639
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "68d453529a4ce66c": {
+  "answer": "The Loebner Prize is an annual competition that awards the most human-like computer program in a Turing Test-style contest, where AI chatbots attempt to convince judges they are human through conversation. It was established in 1990 by Hugh Loebner.",
+  "timings": {
+   "total_s": 0.984
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "e9f546f2d604ad97": {
+  "answer": "Pluto was discovered by Clyde Tombaugh in 1930.",
+  "timings": {
+   "total_s": 0.594
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ },
+ "4c8d7b1c06c76f92": {
+  "answer": "When Galileo pointed his telescope at Jupiter in 1610, he discovered four moons orbiting the planet, now known as the Galilean moons: Io, Europa, Ganymede, and Callisto.",
+  "timings": {
+   "total_s": 0.799
+  },
+  "grade": {
+   "declined": false,
+   "verdict": "answered_from_memory",
+   "key_facts_present": [],
+   "coverage": null,
+   "incorrect_claims": []
+  }
+ }
+}
