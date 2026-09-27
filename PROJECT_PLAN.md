@@ -272,3 +272,10 @@ Same baseline prompt, temperature 0, 5 runs each: **gpt-4.1-mini → "$500" 5/5;
 - Corpus moved from a tab on the chat page to its own Overview page ("Corpus: the N sources", count from the manifest); the chat page has no tabs, so its input is now pinned to the bottom of the window.
 - New Overview page "How it's built: the code" (`lab/code_page.py`): what LangChain vs LangGraph do here, then 13 snippets in system-diagram order (splitter, Chroma, retrieve, BM25, RRF, RAGState, graph wiring, structured evidence check, generate, RAG_PROMPT, stream_answer, get_llm, faithfulness judge). Snippets come from `inspect.getsource()` on the running code, each linked to its file on GitHub.
 - `ui/chrome.py`: author name + "Connect on LinkedIn" at the bottom of the sidebar, and a footer ("Built with Streamlit, LangChain and LangGraph, using Claude Code and other AI tools, with a human in the loop."), both on every page (called after `page.run()`).
+
+### "What is RAG?" infographic on Start here (2026-09-27)
+- `rag_explainer()` in `lab/site_pages.py`, first thing on the home page, all colours from `ui/theme.py` tokens (new `--on-rag`).
+- Left, "Where it fits in AI": nested layers AI ⊃ machine learning ⊃ deep learning ⊃ LLMs, with the note that RAG is not a new model but a way of using an LLM at question time.
+- Right, "What changes": LLM alone vs LLM + RAG (answers from, knowledge, citations, when it doesn't know, cost to update).
+- Bottom: a 4-step flow (Question → Retrieve → Augment → Generate) using the $13,500 Dartmouth example and the live source count and top-k.
+- Checked at 1280/1100 in light and dark mode, and at 420px (everything stacks to one column, no sideways scroll).

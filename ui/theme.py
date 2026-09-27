@@ -23,7 +23,7 @@ FONT_MONO = '"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
 
 LIGHT = {
     "accent": "#C2603E", "on-accent": "#ffffff",
-    "rag": "#2a78d6", "rag-soft": "rgba(42,120,214,.10)",
+    "rag": "#2a78d6", "rag-soft": "rgba(42,120,214,.10)", "on-rag": "#ffffff",
     "baseline": "#8a867c", "baseline-soft": "rgba(138,134,124,.14)",
     "success": "#1f8a4c", "success-soft": "rgba(31,138,76,.13)",
     "error": "#c4521f", "error-soft": "rgba(196,82,31,.12)",
@@ -35,7 +35,7 @@ LIGHT = {
 }
 DARK = {
     "accent": "#D97757", "on-accent": "#1F1E1D",
-    "rag": "#3987e5", "rag-soft": "rgba(57,135,229,.16)",
+    "rag": "#3987e5", "rag-soft": "rgba(57,135,229,.16)", "on-rag": "#ffffff",
     "baseline": "#9c988c", "baseline-soft": "rgba(156,152,140,.18)",
     "success": "#3fb67a", "success-soft": "rgba(63,182,122,.18)",
     "error": "#e66a3d", "error-soft": "rgba(230,106,61,.18)",

@@ -92,6 +92,94 @@ def pct(a: float, b: int) -> str:
     return f"{100 * a / b:.0f}%" if b else "n/a"
 
 
+# ------------------------------------------------------------ RAG explainer
+
+EXPLAINER_CSS = """
+<style>
+  .rx { border: 1px solid var(--line); border-radius: .8rem; padding: 1.1rem 1.2rem 1.2rem; margin: 0 0 1.8rem; }
+  .rx-eyebrow { font: 600 .72rem/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase;
+                color: var(--muted); margin-bottom: .35rem; }
+  .rx-title { font-family: var(--font-heading); font-size: 1.45rem; font-weight: 600; margin-bottom: 1rem; }
+  .rx-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .rx-h { font-weight: 700; font-size: .9rem; margin-bottom: .55rem; }
+  /* nested layers: where RAG fits */
+  .rx-layer { border: 1px solid var(--line); border-radius: .6rem; padding: .5rem .6rem .6rem; background: var(--baseline-soft); }
+  .rx-layer > .rx-layer { margin-top: .45rem; }
+  .rx-name { font-weight: 600; font-size: .86rem; }
+  .rx-desc { color: var(--muted); font-size: .78rem; }
+  .rx-llm { background: var(--rag-soft); border-color: var(--rag); }
+  .rx-plug { display: flex; align-items: flex-start; gap: .5rem; margin-top: .6rem; font-size: .84rem; }
+  .rx-plug .tag { flex: none; background: var(--rag); color: var(--on-rag); font-weight: 700; font-size: .74rem;
+                  border-radius: 99px; padding: 2px 9px; margin-top: 1px; }
+  /* comparison */
+  .rx-cmp { width: 100%; border-collapse: collapse; font-size: .84rem; }
+  .rx-cmp th, .rx-cmp td { text-align: left; vertical-align: top; padding: .38rem .45rem; border-bottom: 1px solid var(--line); }
+  .rx-cmp th { font-size: .76rem; letter-spacing: .04em; text-transform: uppercase; }
+  .rx-cmp th.base { color: var(--muted); }
+  .rx-cmp th.rag { color: var(--rag); }
+  .rx-cmp td:first-child { color: var(--muted); width: 26%; }
+  /* the four steps */
+  .rx-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 1.1rem; }
+  .rx-step { position: relative; border-top: 3px solid var(--rag); padding: .5rem .2rem 0; }
+  .rx-step .n { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; color: var(--rag); }
+  .rx-step b { display: block; font-size: .92rem; margin: .05rem 0 .15rem; }
+  .rx-step span { font-size: .8rem; color: var(--muted); line-height: 1.45; display: block; }
+  .rx-step:not(:last-child)::after { content: "→"; position: absolute; right: -9px; top: -.9rem; color: var(--rag);
+                                     font-size: 1rem; background: var(--background-color, transparent); }
+  @media (max-width: 1000px) { .rx-row { grid-template-columns: 1fr; } .rx-flow { grid-template-columns: repeat(2, 1fr); }
+                               .rx-step:not(:last-child)::after { display: none; } }
+  @media (max-width: 560px) { .rx-flow { grid-template-columns: 1fr; } }
+</style>"""
+
+
+def rag_explainer(n_docs: int) -> None:
+    """Infographic at the top of Start here: where RAG fits in AI, what it changes, and how it works."""
+    st.markdown(EXPLAINER_CSS, unsafe_allow_html=True)
+    st.markdown(f"""
+<div class="rx">
+  <div class="rx-eyebrow">New to RAG? The one-minute version</div>
+  <div class="rx-title">What is retrieval-augmented generation?</div>
+  <div class="rx-row">
+    <div>
+      <div class="rx-h">Where it fits in AI</div>
+      <div class="rx-layer"><div class="rx-name">Artificial intelligence</div>
+        <div class="rx-desc">Machines doing tasks that normally need human intelligence</div>
+        <div class="rx-layer"><div class="rx-name">Machine learning</div>
+          <div class="rx-desc">Systems that learn patterns from data instead of hand-written rules</div>
+          <div class="rx-layer"><div class="rx-name">Deep learning</div>
+            <div class="rx-desc">Large neural networks trained on huge datasets</div>
+            <div class="rx-layer rx-llm"><div class="rx-name">Large language models (LLMs)</div>
+              <div class="rx-desc">GPT, Claude, Gemini: generate text from what they learned during training</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rx-plug"><span class="tag">RAG</span><span>is not a new model. It's a way of <b>using</b> an LLM:
+        at question time, find the relevant documents and give them to the model to answer from.</span></div>
+    </div>
+    <div>
+      <div class="rx-h">What changes</div>
+      <table class="rx-cmp">
+        <thead><tr><th></th><th class="base">LLM alone</th><th class="rag">LLM + RAG</th></tr></thead>
+        <tbody>
+          <tr><td>Answers from</td><td>Its memory of the training data</td><td>Passages retrieved from your documents</td></tr>
+          <tr><td>Knowledge</td><td>Frozen at training time</td><td>Whatever is in the corpus, updated by re-indexing</td></tr>
+          <tr><td>Citations</td><td>None; you have to trust it</td><td>Every claim points to a source you can check</td></tr>
+          <tr><td>When it doesn't know</td><td>Often guesses, fluently</td><td>Can say “I couldn't find this in the sources”</td></tr>
+          <tr><td>Cost to update</td><td>Retrain or fine-tune the model</td><td>Add documents; the model stays the same</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="rx-flow">
+    <div class="rx-step"><div class="n">1</div><b>Question</b><span>“How much did the 1955 Dartmouth proposal request?”</span></div>
+    <div class="rx-step"><div class="n">2</div><b>Retrieve</b><span>Search {n_docs} AI-history sources for the {config.TOP_K} most relevant passages.</span></div>
+    <div class="rx-step"><div class="n">3</div><b>Augment</b><span>Put those passages into the prompt as numbered sources [1]…[{config.TOP_K}].</span></div>
+    <div class="rx-step"><div class="n">4</div><b>Generate</b><span>The LLM answers from those passages only, and cites them. Here: &#36;13,500 [1].</span></div>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+
 # ------------------------------------------------------------------ Start here
 
 def home_page() -> None:
@@ -101,6 +189,7 @@ def home_page() -> None:
     n, m = S["n_answerable"], S["n_refuse"]
     q16 = next((r for r in run["results"] if r["id"] == "q16"), None)
 
+    rag_explainer(len(man["documents"]))
     st.markdown("<div class='eyebrow'>Retrieval-augmented generation, built and explained</div>"
                 "<div class='hero'>A RAG pipeline you can use, and look inside.</div>"
                 f"<div class='lede'>This project builds a retrieval-augmented generation (RAG) pipeline over "
