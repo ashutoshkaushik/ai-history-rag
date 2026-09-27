@@ -182,10 +182,7 @@ Both targets met: faithfulness ≥ 90% (91%), p95 ≤ 8s (3.97s). Judge cost: ~1
 Bug found in testing: Streamlit rendered "$13,500 … $1,200" as a LaTeX formula, so all model/user text now escapes `$`.
 
 ## Phase 8: Submission
-- [ ] README: setup, architecture diagram, how to ingest, ask, eval, and run the UI, plus the results table
-- [ ] Google Doc: one-liner, completed framework table, corpus and datasets, prompts, iterations tried (with the ablation table), LLM vs RAG findings, learnings, and how Claude Code was used
-- [ ] Video of 5 min or less: problem (30s) → architecture (45s) → live demo covering a lookup, a long-tail question, and a refusal (2 min) → results (1 min) → AI-tooling workflow (30s)
-- [ ] Push to GitHub and submit the form: https://forms.gle/1EYiudaGDfp2eY9f8
+- 
 
 ---
 
