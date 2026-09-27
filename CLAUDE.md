@@ -29,7 +29,9 @@ Course: The Gen Academy Week 2 (LangChain + LangGraph track). The phased plan an
 
 ## Deployment
 - Streamlit Community Cloud; see README "Deploy publicly". Public mode = `PUBLIC_DEPLOYMENT=1` (usage caps in `lab/usage.py`, only CC BY-SA full text). A fresh start runs `rag.bootstrap` to build data/.
-- Theme: `.streamlit/config.toml` (serif headings/answers, warm palette, light + dark).
+- Theme: `ui/theme.py` is the ONLY place colours and fonts are defined (tokens injected once by `apply_theme()` in app.main; Altair charts read `theme.tokens()` / `theme.categorical()`). `.streamlit/config.toml` mirrors the accent and base palette for Streamlit's own widgets.
+- Token meanings are fixed: --accent = buttons/links/active nav only; --rag = RAG; --baseline = model alone; --success/--error = correct/wrong; --caution = refusals; --data-1..3 = other chart categories. Never hard-code a hex colour or font family in pages.
+- No emoji in page titles, headers, tabs or toggles; sidebar icons use Material icons (":material/...").
 
 ## Conventions
 - Package code in `src/rag/`, one-off scripts in `scripts/`, eval data in `eval/`.

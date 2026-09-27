@@ -15,6 +15,13 @@ def link(key: str, label: str, icon: str | None = None, **kw) -> None:
         st.page_link(PAGES[key], label=label, icon=icon, **kw)
 
 
+def go_button(key: str, label: str, primary: bool = False, button_key: str | None = None) -> None:
+    """A real, prominent button that opens another page (st.page_link renders as a plain link)."""
+    if key in PAGES and st.button(label, type="primary" if primary else "secondary", width="stretch",
+                                  key=button_key or f"go_{key}_{label}"):
+        st.switch_page(PAGES[key])
+
+
 def tour_footer(key: str) -> None:
     """Previous / Next buttons at the bottom of a pipeline page."""
     i = TOUR.index(key)
@@ -23,10 +30,8 @@ def tour_footer(key: str) -> None:
     st.divider()
     left, _, right = st.columns([2, 1, 2])
     with left:
-        prev_page = PAGES.get(prev_key)
-        if prev_page:
-            st.page_link(prev_page, label=f"Previous: {prev_page.title}", icon="⬅️", width="stretch")
+        if prev_key in PAGES:
+            go_button(prev_key, f"← Previous: {PAGES[prev_key].title}", button_key=f"prev_{key}")
     with right:
-        next_page = PAGES.get(next_key)
-        if next_page:
-            st.page_link(next_page, label=f"Next: {next_page.title}", icon="➡️", width="stretch")
+        if next_key in PAGES:
+            go_button(next_key, f"Next: {PAGES[next_key].title.split(':')[0]} →", primary=True, button_key=f"next_{key}")

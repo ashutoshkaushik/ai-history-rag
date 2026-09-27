@@ -246,3 +246,21 @@ Same baseline prompt, temperature 0, 5 runs each: **gpt-4.1-mini → "$500" 5/5;
 - First start builds data/ via `rag.bootstrap` (download → ingest → viewers). Tested on a clean copy: 55/55 downloaded, 2 minutes. It produced 1,146 chunks vs 1,145 locally because a live Wikipedia article had changed, so the cloud index can drift slightly from the evaluated one.
 - `requirements.txt` is pinned from uv.lock; app.py adds `src/` to sys.path, so no package install is needed.
 - Results caption corrected to the final data: the gap is widest on long-tail (+56 pts) and expert (+54) questions and narrowest on comparisons (+8) and timelines (+9).
+
+### UI polish (2026-09-26)
+- Home action cards with real buttons ("Try the assistant" is the primary one); Lab Previous/Next are buttons.
+- Truncation fixed site-wide, verified with an ellipsis/overflow detector at 1024px and 1280px on all pages: short metric labels with full descriptions in tooltips, a global CSS rule so metric labels, deltas and button text wrap, "Allow fallback to model memory" toggle, "Clear chat" icon button, and the Results refusal table as a wrapping HTML table with ✓/✗ badges and word-boundary excerpts.
+- Chat empty state: 6 starter questions (2 popular, 2 curious, 1 expert, 1 should-refuse) that submit on click and disappear once a conversation starts; the sidebar sample list is collapsed by default; new input placeholder.
+
+### Design system + layout pass (2026-09-26)
+- `ui/theme.py`: one token set (light + dark, chosen from `st.context.theme`), serif headings / sans body at a fixed H1–H4 scale on every page, shared badges, main width capped at 1240px. 47 hard-coded colours/fonts removed from app.py, lab/rag_lab.py and lab/site_pages.py.
+- Lab category charts moved to a validated violet / yellow / magenta set, so blue always means RAG and green always means correct.
+- Home: new title ("A RAG pipeline you can use, and look inside."), and the $13,500 comparison states the correct answer, with ✓ Correct on RAG and ✗ Wrong / struck-through $500 on the model alone.
+- Research Assistant: each turn is question → two columns (header, timing, answer in sans 16px/1.6) → full-width Sources cited + Retrieved context; the columns stack under 900px, RAG first. Measured: 453px per column at 1280px with the sidebar open, 533px at 1440px, ~580px at 1280px with the sidebar collapsed.
+- Emoji removed from titles, headers, tabs and expanders; Material icons in the sidebar.
+
+### Chunk card component + Retrieval lab readability (2026-09-26)
+- `ui/components.py`: `chunk_card()` (large rank #n, typed score "cosine 0.479" / "BM25 10.3" / "RRF 0.0138", title/year/section, cleaned 3-line preview centred on BM25-matched terms, "Show more" expander, green border + "✓ Gold" badge) and `compare_table()`. `clean_display_text()` strips `{\displaystyle …}` blocks (nested braces), runs of 6+ numbers and one/two-character math shreds, and collapses whitespace (display only; the index is unchanged). An RLHF math chunk goes from 1,391 to 715 characters of readable text.
+- Retrieval page: a per-column gold summary ("✓ Gold found at rank 3" / "✗ Gold not in top 5"), a note that scores aren't comparable across methods, and a "Compact view" toggle (rank × method table, gold cells highlighted).
+- The same card is used on the Prompts page (retrieved chunks, with token counts) and in the Research Assistant's "Retrieved context" (2-column grid). Chat history now stores full chunk text for "Show more".
+- Breadcrumb is a single row (scrolls sideways when narrow); Previous/Next buttons are at the bottom of all six Lab pages.

@@ -11,38 +11,60 @@ import statistics
 import streamlit as st
 import yaml
 
-from lab.nav import link
+from lab.nav import go_button, link
 from rag import config
-
-RAG_COLOR, LLM_COLOR = "#2a78d6", "#eb6834"      # validated palette slots 1 and 2
+from ui import theme
 
 CSS = """
 <style>
-  .eyebrow { font: 600 .74rem/1 "Hanken Grotesk", sans-serif; letter-spacing: .12em; text-transform: uppercase;
-             color: #C2603E; margin-bottom: .6rem; }
-  .hero { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12;
+  /* Colours and fonts are ui/theme.py tokens: --rag = RAG, --baseline = model alone,
+     --success / --error = correct / wrong, --accent is reserved for buttons, links and nav. */
+  .eyebrow { font: 600 .74rem/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase;
+             color: var(--muted); margin-bottom: .6rem; }
+  .hero { font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 2.9rem); line-height: 1.12;
           font-weight: 600; margin: 0 0 .8rem; text-wrap: balance; }
-  .lede { font-size: 1.12rem; line-height: 1.6; opacity: .82; max-width: 62ch; margin-bottom: 1.2rem; }
-  .duel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: .4rem 0 1rem; }
-  .duel > div { border: 1px solid rgba(127,127,127,.28); border-radius: .6rem; padding: .9rem 1rem; }
-  .duel .who { font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
-  .duel .ans { font-family: "Source Serif 4", Georgia, serif; font-size: 1.9rem; font-weight: 600; margin: .15rem 0; }
-  .duel .note { font-size: .86rem; opacity: .75; }
-  .duel .bad { border-color: rgba(235,104,52,.55); }
-  .duel .good { border-color: rgba(42,120,214,.55); }
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
-  .steps > div { border-top: 3px solid #C2603E; padding-top: .5rem; }
+  .lede { margin-bottom: 1.2rem; }
+  .answer-key { font-size: .95rem; margin: .2rem 0 .7rem; }
+  .answer-key b { color: var(--success); }
+  .duel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: .2rem 0 1rem; }
+  .duel > div { border: 1px solid var(--line); border-radius: .6rem; padding: .9rem 1rem; }
+  .duel .who { font-size: .76rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .duel .base .who { color: var(--muted); }
+  .duel .rag .who { color: var(--rag); }
+  .duel .ansrow { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin: .2rem 0; }
+  .duel .ans { font-family: var(--font-heading); font-size: 1.9rem; font-weight: 600; }
+  .duel .base .ans { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--error);
+                     text-decoration-thickness: 2px; }
+  .duel .note { font-size: .86rem; color: var(--muted); }
+  .duel .base { border-left: 4px solid var(--baseline); }
+  .duel .rag { border: 2px solid var(--success); background: var(--success-soft); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 1100px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  .steps > div { border-top: 3px solid var(--rag); padding-top: .5rem; }
   .steps b { display: block; font-size: .95rem; margin-bottom: .2rem; }
-  .steps span { font-size: .86rem; opacity: .75; }
-  .foot { font-size: .8rem; opacity: .6; }
-  .card { border: 1px solid rgba(127,127,127,.28); border-radius: .6rem; padding: .9rem 1rem; margin-bottom: .9rem; }
-  .card .q { font-family: "Source Serif 4", Georgia, serif; font-size: 1.12rem; font-weight: 600; margin-bottom: .5rem; }
+  .steps span { font-size: .86rem; color: var(--muted); }
+  .foot { font-size: .8rem; color: var(--muted); }
+  .act-t { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 600; margin-bottom: .25rem; }
+  .act-b { font-size: .92rem; color: var(--muted); line-height: 1.45; min-height: 2.9em; margin-bottom: .5rem; }
+  .card { border: 1px solid var(--line); border-radius: .6rem; padding: .9rem 1rem; margin-bottom: .9rem; }
+  .card .q { font-family: var(--font-heading); font-size: 1.12rem; font-weight: 600; margin-bottom: .5rem; }
   .card .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .card .lab { font-size: .74rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .7; margin-bottom: .2rem; }
-  .card .txt { font-family: "Source Serif 4", Georgia, serif; font-size: .98rem; line-height: 1.55; }
-  .card .wrong { background: rgba(235,104,52,.12); border-left: 3px solid #eb6834; padding: .35rem .6rem; margin-top: .45rem;
-                 font-size: .86rem; border-radius: 3px; }
-  .card .ref { font-size: .84rem; opacity: .72; margin-top: .6rem; }
+  .card .lab { font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: .2rem; }
+  .card .lab.base { color: var(--muted); }
+  .card .lab.rag { color: var(--rag); }
+  .card .txt { font-size: .95rem; line-height: 1.55; }
+  .card .wrong { background: var(--error-soft); border-left: 3px solid var(--error); padding: .35rem .6rem;
+                 margin-top: .45rem; font-size: .86rem; border-radius: 3px; }
+  .card .ref { font-size: .84rem; color: var(--muted); margin-top: .6rem; }
+  .tablewrap { overflow-x: auto; }
+  .reftab { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .reftab th { text-align: left; font-weight: 600; padding: .45rem .6rem; border-bottom: 2px solid var(--line); }
+  .reftab th.rag { color: var(--rag); }
+  .reftab th.base { color: var(--muted); }
+  .reftab td { vertical-align: top; padding: .55rem .6rem; border-bottom: 1px solid var(--line); }
+  .reftab td:first-child { width: 36%; }
+  .reftab .kind { color: var(--muted); white-space: nowrap; }
+  .reftab .small { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
   @media (max-width: 760px) { .duel, .card .cols { grid-template-columns: 1fr; } }
 </style>"""
 
@@ -59,6 +81,12 @@ def manifest() -> dict:
     return yaml.safe_load(config.CORPUS_MANIFEST.read_text())
 
 
+def clip(text: str, limit: int) -> str:
+    """Shorten at a word boundary with an ellipsis, instead of cutting mid-word."""
+    text = text.strip()
+    return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0].rstrip(",.;:") + "…"
+
+
 def pct(a: float, b: int) -> str:
     return f"{100 * a / b:.0f}%" if b else "n/a"
 
@@ -72,45 +100,62 @@ def home_page() -> None:
     n, m = S["n_answerable"], S["n_refuse"]
     q16 = next((r for r in run["results"] if r["id"] == "q16"), None)
 
-    st.markdown("<div class='eyebrow'>AI history · retrieval-augmented generation</div>"
-                "<div class='hero'>Ask about the history of AI, and see exactly where each answer comes from.</div>"
-                f"<div class='lede'>A research assistant grounded in {len(man['documents'])} curated sources, from "
-                "Turing's 1950 paper and the Dartmouth proposal to the Lighthill Report and GPT-4. It answers only "
-                "from those documents, cites every claim, and says so when the sources don't have the answer. Next "
-                "to it runs the same model with no sources, so you can see what grounding changes.</div>",
-                unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        link("chat", "Try the assistant", "💬", width="stretch")
-    with c2:
-        link("tokens", "Take the pipeline tour", "🔬", width="stretch")
-    with c3:
-        link("results", "See the results", "📊", width="stretch")
+    st.markdown("<div class='eyebrow'>Retrieval-augmented generation, built and explained</div>"
+                "<div class='hero'>A RAG pipeline you can use, and look inside.</div>"
+                f"<div class='lede'>This project builds a retrieval-augmented generation (RAG) pipeline over "
+                f"{len(man['documents'])} sources on the history of AI, from Turing's 1950 paper to GPT-4, then opens "
+                "it up. Ask a question and compare the grounded, cited answer with the same model answering from "
+                "memory. Then follow each step that produced it: tokens, chunks, embeddings, retrieval, the "
+                "“I don't know” gate, and the final prompt.</div>", unsafe_allow_html=True)
+    actions = [
+        ("chat", "Ask a question", "Chat with the assistant and compare it live with the same model "
+         "answering from memory.", "Try the assistant →", True),
+        ("tokens", "See how it works", "Walk through the pipeline in six interactive steps, from tokens "
+         "to the final prompt.", "Start the tour →", False),
+        ("results", "See the evidence", "The scoreboard from 34 test questions, and the mistakes the model "
+         "made without sources.", "View the results →", False),
+    ]
+    for col, (key, title, blurb, label, primary) in zip(st.columns(3), actions):
+        with col, st.container(border=True):
+            st.markdown(f"<div class='act-t'>{title}</div><div class='act-b'>{blurb}</div>",
+                        unsafe_allow_html=True)
+            go_button(key, label, primary=primary, button_key=f"home_{key}")
 
     st.markdown("### The $13,500 question")
     llm_ans = html.escape(q16["llm"]["answer"]) if q16 else "The 1955 Dartmouth proposal requested $500."
     st.markdown(
+        "<div class='answer-key'>“How much money did the 1955 Dartmouth proposal request?” "
+        "Correct answer: <b>&#36;13,500</b>, the total of the budget table in the proposal itself.</div>"
         "<div class='duel'>"
-        f"<div class='bad'><div class='who'>🤖 {config.CHAT_MODEL}, no sources</div><div class='ans'>$500</div>"
-        f"<div class='note'>“{llm_ans}” The same answer in 5 of 5 runs: confident, and wrong.</div></div>"
-        f"<div class='good'><div class='who'>🧠 {config.CHAT_MODEL} + RAG</div><div class='ans'>$13,500</div>"
-        "<div class='note'>Itemized from the budget table in the 1955 proposal itself, with a citation "
-        "to the primary source.</div></div></div>", unsafe_allow_html=True)
-    st.caption("“How much money did the 1955 Dartmouth proposal request?” is one of 34 test questions. Larger models "
+        f"<div class='base'><div class='who'>Model alone · {config.CHAT_MODEL}, no sources</div>"
+        "<div class='ansrow'><span class='ans'>&#36;500</span><span class='badge no'>✗ Wrong</span></div>"
+        f"<div class='note'>“{llm_ans.replace('$', '&#36;')}” The same answer in 5 of 5 runs: confident, and wrong."
+        "</div></div>"
+        f"<div class='rag'><div class='who'>RAG · {config.CHAT_MODEL} + retrieval</div>"
+        "<div class='ansrow'><span class='ans'>&#36;13,500</span><span class='badge ok'>✓ Correct · matches the source"
+        "</span></div><div class='note'>Itemized from the budget table in the 1955 proposal, with a citation to "
+        "that primary source.</div></div></div>", unsafe_allow_html=True)
+    st.caption("This is one of 34 test questions. Larger models "
                "such as gpt-4.1 do know this one ($13,500 in 5 of 5 runs). The point is that retrieval lets a small, "
                "cheap model match them on obscure details, and adds a source you can check instead of trusting "
                "any model's memory.")
 
     st.markdown(f"### Measured on {S['n']} test questions")
     k = st.columns(4)
-    k[0].metric("Fully correct answers", pct(R["correct"], n),
-                delta=f"{100 * (R['correct'] - L['correct']) / n:+.0f} pts vs no sources")
-    k[1].metric("Claims supported by a source", f"{100 * R['faithfulness']:.0f}%",
-                help="Faithfulness, graded claim by claim by gpt-4.1 and checked against a manual audit.")
-    k[2].metric("Correctly said “I don't know”", f"{R['correct_refusals']}/{m}",
-                delta=f"no sources: {L['correct_refusals']}/{m}", delta_color="off")
-    k[3].metric("Answer time (95th percentile)", f"{S['latency']['total_s']['p95']:.1f}s",
-                help="Target: under 8 seconds.")
+    k[0].metric("Fully correct", pct(R["correct"], n),
+                delta=f"{100 * (R['correct'] - L['correct']) / n:+.0f} pts vs model alone",
+                help=f"Answers that contain every key fact of the verified reference and no wrong claim, out of the "
+                     f"{n} answerable test questions. The same model without sources scored {pct(L['correct'], n)}.")
+    k[1].metric("Supported claims", f"{100 * R['faithfulness']:.0f}%",
+                help="Faithfulness: the share of individual claims in RAG's answers that are directly supported by "
+                     "the retrieved sources, graded claim by claim by gpt-4.1 and checked against a manual audit.")
+    k[2].metric("Correct refusals", f"{R['correct_refusals']}/{m}",
+                delta=f"model alone: {L['correct_refusals']}/{m}", delta_color="off",
+                help=f"Of the {m} questions whose answer is not in the corpus (or not about AI), how many the "
+                     "system correctly answered with “I don't know” instead of guessing.")
+    k[3].metric("p95 latency", f"{S['latency']['total_s']['p95']:.1f}s",
+                help="Answer time at the 95th percentile: 95% of questions were answered at least this fast. "
+                     "The target is under 8 seconds.")
 
     st.markdown("### How it works")
     st.markdown(
@@ -121,7 +166,7 @@ def home_page() -> None:
         "<div><b>4 · Answer</b><span>Write from those passages only, citing each claim as [1]…[5].</span></div>"
         "</div>", unsafe_allow_html=True)
     st.markdown("")
-    link("diagram", "See the full system diagram", "🗺️")
+    link("diagram", "See the full system diagram", ":material/account_tree:")
     st.markdown(f"<div class='foot'>Built with LangChain, LangGraph, Chroma and OpenAI "
                 f"({config.CHAT_MODEL} for answers, {config.EMBEDDING_MODEL} for search, {config.JUDGE_MODEL} for "
                 f"grading). Results from evaluation run <code>{run['run_id']}</code>.</div>", unsafe_allow_html=True)
@@ -136,8 +181,9 @@ def results_page() -> None:
     S, R, L = run["summary"], run["summary"]["rag"], run["summary"]["llm"]
     n, m = S["n_answerable"], S["n_refuse"]
     rows = run["results"]
+    tk = theme.tokens()
 
-    st.title("📊 Results: when does RAG beat the model alone?")
+    st.title("Results: when does RAG beat the model alone?")
     st.markdown(f"<div class='lede'>Both systems answered the same {S['n']} test questions: {n} with answers in "
                 f"the corpus and {m} that should be refused. The chat model is {run['settings']['chat_model']} in "
                 f"both; answers were graded by {run['settings']['judge_model']}, a different and stronger model. "
@@ -156,8 +202,8 @@ def results_page() -> None:
         ("Answer time, median / 95th percentile", f"{S['latency']['total_s']['p50']:.1f}s / {S['latency']['total_s']['p95']:.1f}s",
          f"{S['latency']['llm_total_s']['p50']:.1f}s / {S['latency']['llm_total_s']['p95']:.1f}s"),
     ]
-    st.dataframe([{"": a, "🧠 RAG": b, "🤖 Model alone": c} for a, b, c in board], hide_index=True, width="stretch")
-    st.caption("* The one RAG flag (q03, “the 1956 Dartmouth project”) is a known judge false positive: the "
+    st.dataframe([{"": a, "RAG": b, "Model alone": c} for a, b, c in board], hide_index=True, width="stretch")
+    st.caption("\\* The one RAG flag (q03, “the 1956 Dartmouth project”) is a known judge false positive: the "
                "workshop did take place in 1956. The 3 wrong refusals are retrieval misses (q05, q07, q24): RAG said "
                "“I don't know” rather than guess.")
 
@@ -171,7 +217,7 @@ def results_page() -> None:
     data = []
     for key in sorted({r[by] for r in ans}):
         g = [r for r in ans if r[by] == key]
-        for side, label in (("rag", "🧠 RAG"), ("llm", "🤖 Model alone")):
+        for side, label in (("rag", "RAG"), ("llm", "Model alone")):
             cov = 100 * statistics.mean(r[side]["grade"]["coverage"] or 0 for r in g)
             data.append({"group": f"{names.get(key, key)} ({len(g)})", "system": label, "coverage": round(cov)})
     order = [d["group"] for d in data[::2]]
@@ -179,11 +225,11 @@ def results_page() -> None:
         y=alt.Y("group:N", sort=order, title=None, axis=alt.Axis(labelLimit=240)),
         yOffset=alt.YOffset("system:N"),
         x=alt.X("coverage:Q", title="key facts covered (%)", scale=alt.Scale(domain=[0, 100])),
-        color=alt.Color("system:N", scale=alt.Scale(domain=["🧠 RAG", "🤖 Model alone"], range=[RAG_COLOR, LLM_COLOR]),
+        color=alt.Color("system:N", scale=alt.Scale(domain=["RAG", "Model alone"], range=[tk["rag"], tk["baseline"]]),
                         legend=alt.Legend(orient="top", title=None)),
         tooltip=["group:N", "system:N", "coverage:Q"])
     bars = base.mark_bar(cornerRadiusEnd=4, height=14)
-    text = base.mark_text(align="left", dx=4, color="#8a867c").encode(text=alt.Text("coverage:Q", format=".0f"))
+    text = base.mark_text(align="left", dx=4, color=tk["muted"]).encode(text=alt.Text("coverage:Q", format=".0f"))
     st.altair_chart(bars + text, height=60 + 44 * len(order), width="stretch")
     st.caption("The gap is widest on long-tail details (+56 points) and expert questions (+54): the Dartmouth "
                "budget, ImageNet's size, Lighthill's categories. It is narrowest on comparisons (+8) and timelines "
@@ -191,11 +237,20 @@ def results_page() -> None:
 
     st.markdown("### Questions that should be refused")
     ref = [r for r in rows if r["expected_behavior"] == "refuse"]
-    st.dataframe([{"question": r["question"],
-                   "type": {"F1": "impossible", "F2": "not in the corpus", "H": "not about AI"}[r["category"]],
-                   "🧠 RAG": ("refused, " + r["rag"]["refusal_stage"].replace("_", " ")) if r["rag"]["refused"] else "answered",
-                   "🤖 Model alone": "declined" if r["llm"]["grade"]["declined"] else "answered from memory: "
-                   + r["llm"]["answer"][:70]} for r in ref], hide_index=True, width="stretch")
+    kinds = {"F1": "impossible", "F2": "not in the corpus", "H": "not about AI"}
+    trs = []
+    for r in ref:
+        rag = (f"<span class='badge ok'>✓ Refused</span><div class='small'>at the "
+               f"{r['rag']['refusal_stage'].replace('_', ' ')}</div>") if r["rag"]["refused"] else \
+              "<span class='badge no'>✗ Answered</span>"
+        llm = "<span class='badge ok'>✓ Declined</span>" if r["llm"]["grade"]["declined"] else \
+              (f"<span class='badge no'>✗ Answered from memory</span>"
+               f"<div class='small'>“{html.escape(clip(r['llm']['answer'], 160))}”</div>")
+        trs.append(f"<tr><td>{html.escape(r['question'])}</td><td class='kind'>{kinds[r['category']]}</td>"
+                   f"<td>{rag}</td><td>{llm}</td></tr>")
+    st.markdown("<div class='tablewrap'><table class='reftab'><thead><tr><th>Question</th><th>Type</th>"
+                "<th class='rag'>RAG</th><th class='base'>Model alone</th></tr></thead><tbody>" + "".join(trs) +
+                "</tbody></table></div>", unsafe_allow_html=True)
     st.caption("The model alone answers most of these from memory, sometimes correctly (Tombaugh, 1930), but with "
                "nothing a reader could check. RAG refuses all six: two for free at the score gate, four at the "
                "evidence check.")
@@ -208,9 +263,9 @@ def results_page() -> None:
         claims = "".join(f"<div class='wrong'>✗ {html.escape(c)}</div>" for c in r["llm"]["grade"]["incorrect_claims"])
         st.markdown(
             f"<div class='card'><div class='q'>{html.escape(r['question'])}</div><div class='cols'>"
-            f"<div><div class='lab'>🤖 Model alone · {r['llm']['grade']['verdict']}</div>"
+            f"<div><div class='lab base'>Model alone · {r['llm']['grade']['verdict']}</div>"
             f"<div class='txt'>{html.escape(r['llm']['answer'][:420])}</div>{claims}</div>"
-            f"<div><div class='lab'>🧠 RAG · {r['rag']['grade']['verdict']}</div><div class='txt'>{rag_txt}</div></div>"
+            f"<div><div class='lab rag'>RAG · {r['rag']['grade']['verdict']}</div><div class='txt'>{rag_txt}</div></div>"
             f"</div><div class='ref'>Reference: {html.escape(r['reference_answer'])}</div></div>",
             unsafe_allow_html=True)
 

@@ -12,6 +12,7 @@ pushes streamed tokens into a queue, and the main script thread (the only one al
 in Streamlit) drains both queues and updates the two columns as text arrives.
 """
 
+import html
 import queue
 import re
 import sys
@@ -29,6 +30,8 @@ import yaml
 
 from lab.explore_pages import chunk_viewer_page, diagram_page, embedding_viewer_page
 from lab.nav import PAGES, TOUR
+from ui import theme
+from ui.components import chunk_card
 from lab.usage import remaining_note, try_spend
 from lab.rag_lab import gate_page, prompts_page, retrieval_page, tokens_page
 from lab.site_pages import home_page, results_page
@@ -61,36 +64,49 @@ EXAMPLES = {
     ],
 }
 
-SOURCE_ICON = {"primary": "📜", "secondary": "📖", "reference": "🗂️"}
 STAGE_LABEL = {"retrieve_s": "retrieve", "grade_s": "evidence check", "generate_s": "generate",
                "first_token_s": "first token", "total_s": "total"}
-STAGE_STATUS = {"retrieve": "🧪 Checking the evidence…", "grade_evidence": "✍️ Writing a cited answer…"}
+STAGE_STATUS = {"retrieve": "Checking the evidence…", "grade_evidence": "Writing a cited answer…"}
 CURSOR = " ▌"
 
 
 # --------------------------------------------------------------------- styling
 
 def inject_css() -> None:
+    """Chat-page layout. Colours and fonts come from ui/theme.py tokens (var(--…))."""
     st.markdown("""
     <style>
-      /* Answers read like prose: serif, slightly larger, as in Claude's own chat */
-      [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p,
-      [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] li {
-        font-family: "Source Serif 4", Georgia, serif; font-size: 1.04rem; line-height: 1.62; }
-      .app-title { font-family: "Source Serif 4", Georgia, serif; font-size: 2rem; font-weight: 600; margin-bottom: 0; }
-      .app-sub { opacity: .72; margin-bottom: 0.6rem; }
-      .side-head { font-weight: 700; font-size: 1.02rem; margin-bottom: 0.1rem; }
-      .side-sub { opacity: .68; font-size: 0.8rem; margin-bottom: 0.5rem; }
-      .rag-head { border-bottom: 3px solid #C2603E; padding-bottom: 0.2rem; }
-      .llm-head { border-bottom: 3px solid #9c988c; padding-bottom: 0.2rem; }
-      .status { color: #C2603E; font-size: 0.85rem; }
-      .refusal { border-left: 4px solid #b7791f; padding: 0.4rem 0.8rem; background: rgba(183,121,31,0.10);
+      .app-sub { color: var(--muted); margin-bottom: .6rem; }
+      .question { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin: 1.2rem 0 .6rem; }
+      .side-head { font-weight: 700; font-size: 1rem; padding-bottom: .25rem; }
+      .side-head.rag { border-bottom: 3px solid var(--rag); }
+      .side-head.base { border-bottom: 3px solid var(--baseline); }
+      .side-sub { color: var(--muted); font-size: .8rem; margin-top: .25rem; }
+      .timing { color: var(--muted); font-size: .78rem; margin: .15rem 0 .6rem; min-height: 1.1rem; }
+      .status { color: var(--rag); font-size: .82rem; margin: .15rem 0 .6rem; min-height: 1.1rem; }
+      .refusal { border-left: 4px solid var(--caution); padding: .5rem .8rem; background: var(--caution-soft);
                  border-radius: 4px; }
-      .fallback { border-left: 4px solid #9c988c; padding: 0.4rem 0.8rem; background: rgba(156,152,140,0.14);
-                  border-radius: 4px; }
-      .src-meta { opacity: .68; font-size: 0.85rem; }
-      .timing { opacity: .6; font-size: 0.8rem; margin-top: 0.3rem; }
-      sup.cite { font-size: 0.72em; font-weight: 600; color: #C2603E; }
+      .fallback { border-left: 4px solid var(--baseline); padding: .5rem .8rem; background: var(--baseline-soft);
+                  border-radius: 4px; margin-top: .6rem; }
+      .src-meta { color: var(--muted); font-size: .85rem; }
+      sup.cite { font-size: .72em; font-weight: 600; color: var(--rag); }
+      /* answers: sans body at 16px / 1.6 for long-form reading */
+      [class*="st-key-turn"] [data-testid="stMarkdownContainer"] p,
+      [class*="st-key-turn"] [data-testid="stMarkdownContainer"] li { font-family: var(--font-body);
+        font-size: 16px; line-height: 1.6; }
+      /* under 900px, stack the two answers, RAG first */
+      @media (max-width: 900px) {
+        [class*="st-key-turn"] [data-testid="stHorizontalBlock"] { flex-direction: column; }
+        [class*="st-key-turn"] [data-testid="stColumn"] { width: 100% !important; flex: 1 1 100% !important;
+                                                          min-width: 100% !important; }
+      }
+      .empty-lede { font-size: 1.02rem; color: var(--muted); max-width: 70ch; margin: .4rem 0 .8rem; }
+      /* question chips: full text, wrapped and left-aligned (Streamlit buttons are single-line by default) */
+      .st-key-starters button { height: 100%; min-height: 3.4rem; justify-content: flex-start; text-align: left; }
+      .st-key-starters button * { white-space: normal !important; overflow: visible !important;
+                                  text-overflow: clip !important; text-align: left; }
+      .chip-group { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+                    color: var(--muted); margin: .3rem 0 .15rem; }
     </style>""", unsafe_allow_html=True)
 
 
@@ -111,9 +127,9 @@ def cite_markup(answer: str) -> str:
     return re.sub(r"\[(\d+)\]", r"<sup class='cite'>[\1]</sup>", safe_md(answer))
 
 
-def timing_line(timings: dict, extra: str = "") -> str:
+def timing_line(timings: dict) -> str:
     parts = " · ".join(f"{STAGE_LABEL.get(k, k)} {v:.2f}s" for k, v in timings.items())
-    return f"<div class='timing'>⏱ {parts}{' · ' + extra if extra else ''}</div>"
+    return f"<div class='timing'>{parts}</div>"
 
 
 def to_message(state: dict, strategy: str) -> dict:
@@ -129,8 +145,8 @@ def to_message(state: dict, strategy: str) -> dict:
         "answer": state.get("answer", ""), "refused": state.get("refused", False), "refusal_reason": reason,
         "sources": state.get("sources", []), "timings": state.get("timings", {}), "strategy": strategy,
         "retrieved": [{"n": i, "score": s, "title": d.metadata["title"], "year": d.metadata["year"],
-                       "section": d.metadata.get("section"),
-                       "preview": d.page_content.split("\n", 1)[-1][:350].replace("\n", " ")}
+                       "section": d.metadata.get("section"), "source_type": d.metadata["source_type"],
+                       "text": d.page_content}
                       for i, (d, s) in enumerate(state.get("retrieved", []), 1)],
     }
 
@@ -139,69 +155,78 @@ def to_message(state: dict, strategy: str) -> dict:
 
 def side_header(kind: str) -> None:
     if kind == "rag":
-        st.markdown("<div class='side-head rag-head'>🧠 RAG: grounded in the corpus</div>"
-                    "<div class='side-sub'>Retrieves sources, checks the evidence, cites every claim</div>",
-                    unsafe_allow_html=True)
+        st.markdown(f"<div class='side-head rag'>RAG · grounded in the corpus"
+                    f"<div class='side-sub'>{config.CHAT_MODEL} + retrieval: checks the evidence, cites every claim"
+                    f"</div></div>", unsafe_allow_html=True)
     else:
-        st.markdown("<div class='side-head llm-head'>🤖 LLM-only: model memory</div>"
-                    "<div class='side-sub'>Same model, no retrieval, no citations, can't be verified</div>",
-                    unsafe_allow_html=True)
+        st.markdown(f"<div class='side-head base'>Model alone · from memory"
+                    f"<div class='side-sub'>{config.CHAT_MODEL}, no retrieval: no citations, can't be verified"
+                    f"</div></div>", unsafe_allow_html=True)
 
 
 def render_sources(sources: list[dict]) -> None:
-    with st.expander(f"📚 Sources cited ({len(sources)})", expanded=True):
+    with st.expander(f"Sources cited ({len(sources)})", expanded=True):
         for s in sources:
             where = " · ".join(x for x in [f"p.{s['page']}" if s.get("page") else "", s.get("section") or ""] if x)
             st.markdown(
-                f"**[{s['n']}]** {SOURCE_ICON.get(s['source_type'], '📄')} [{s['title']}]({s['url']}) ({s['year']})  \n"
-                f"<span class='src-meta'>{s['authors']} · {s['source_type']}{' · ' + where if where else ''}</span>",
+                f"**[{s['n']}]** [{s['title']}]({s['url']}) ({s['year']}) "
+                f"<span class='badge base'>{s['source_type']}</span>  \n"
+                f"<span class='src-meta'>{s['authors']}{' · ' + where if where else ''}</span>",
                 unsafe_allow_html=True)
 
 
-def render_retrieved(retrieved: list[dict]) -> None:
-    with st.expander(f"🔎 Retrieved context ({len(retrieved)} chunks)"):
-        st.caption(f"The top {len(retrieved)} chunks by cosine similarity. The answer may only use these. "
-                   f"The score gate refuses if the best score is below {config.MIN_SIMILARITY}.")
-        for r in retrieved:
-            st.markdown(f"**[{r['n']}] {r['score']:.3f}** · {r['title']} ({r['year']})"
-                        f"{' · ' + r['section'] if r['section'] else ''}")
-            st.markdown(f"<div class='src-meta'>{safe_md(r['preview'])}…</div>", unsafe_allow_html=True)
+def render_retrieved(retrieved: list[dict], key: str) -> None:
+    with st.expander(f"Retrieved context ({len(retrieved)} chunks)"):
+        st.caption(f"The top {len(retrieved)} chunks by cosine similarity, numbered as the answer cites them. The "
+                   f"answer may only use these. The score gate refuses if the best score is below "
+                   f"{config.MIN_SIMILARITY}.")
+        cols = st.columns(2, gap="small")
+        for i, r in enumerate(retrieved):
+            with cols[i % 2]:
+                chunk_card(rank=r["n"], title=r["title"], year=r["year"], text=r.get("text") or r.get("preview", ""),
+                           score=r["score"], score_kind="cosine", section=r.get("section"),
+                           source_type=r.get("source_type"), key=f"{key}_ctx_{r['n']}")
 
 
-def render_rag(msg: dict) -> None:
+def render_rag_body(msg: dict) -> None:
     if msg["refused"]:
-        st.markdown(f"<div class='refusal'>🛑 {msg['answer']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='refusal'><span class='badge refuse'>Refused</span> {msg['answer']}</div>",
+                    unsafe_allow_html=True)
         st.caption(msg["refusal_reason"])
     else:
         st.markdown(cite_markup(msg["answer"]), unsafe_allow_html=True)
-        if msg["sources"]:
-            render_sources(msg["sources"])
     if msg.get("fallback"):
         st.markdown(
-            f"<div class='fallback'><b>⚠️ Unverified answer from the model's general knowledge</b> "
-            f"(not from the corpus, no citations):<br>{safe_md(msg['fallback'])}</div>", unsafe_allow_html=True)
+            f"<div class='fallback'><span class='badge base'>Unverified · model memory</span> "
+            f"Not from the corpus, no citations:<br>{safe_md(msg['fallback'])}</div>", unsafe_allow_html=True)
+
+
+def render_details(msg: dict, key: str) -> None:
+    """Full-width row under both answers: what RAG cited and everything it retrieved."""
+    if msg["sources"]:
+        render_sources(msg["sources"])
     if msg["retrieved"]:
-        render_retrieved(msg["retrieved"])
-    st.markdown(timing_line(msg["timings"]), unsafe_allow_html=True)
+        render_retrieved(msg["retrieved"], key)
 
 
-def render_llm(llm: dict) -> None:
-    st.markdown(safe_md(llm["answer"]))
-    st.markdown(timing_line(llm["timings"]), unsafe_allow_html=True)
+def render_question(text: str) -> None:
+    st.markdown(f"<div class='question'>{html.escape(text).replace('$', '&#36;')}</div>", unsafe_allow_html=True)
 
 
-def render_turn(turn: dict) -> None:
-    """One assistant turn: RAG alone, or RAG and LLM-only side by side."""
-    if turn.get("llm"):
-        left, right = st.columns(2, gap="large")
+def render_turn(turn: dict, key: str) -> None:
+    """One finished turn: question, both answers side by side, then sources across the full width."""
+    with st.container(key=key):
+        render_question(turn["question"])
+        left, right = st.columns(2, gap="medium")
         with left:
             side_header("rag")
-            render_rag(turn["rag"])
+            st.markdown(timing_line(turn["rag"]["timings"]), unsafe_allow_html=True)
+            render_rag_body(turn["rag"])
         with right:
             side_header("llm")
-            render_llm(turn["llm"])
-    else:
-        render_rag(turn["rag"])
+            st.markdown(timing_line(turn["llm"]["timings"]), unsafe_allow_html=True)
+            st.markdown(safe_md(turn["llm"]["answer"]))
+        render_details(turn["rag"], key)
 
 
 # ------------------------------------------------------------- live streaming
@@ -216,31 +241,30 @@ def _pump(gen, q: queue.Queue, tag: str) -> None:
     q.put((tag, {"type": "done"}))
 
 
-def stream_turn(question: str, strategy: str, compare: bool, fallback: bool) -> dict:
-    """Stream RAG (and, if compare, LLM-only) into the page at the same time. Returns the finished turn."""
+def stream_turn(question: str, strategy: str, fallback: bool, key: str) -> dict:
+    """Stream RAG and LLM-only into the page at the same time. Returns the finished turn."""
     q: queue.Queue = queue.Queue()
     t0 = time.perf_counter()
     rag_state, rag_text, llm_text, llm_first, llm_total = {}, "", "", None, None
     errors = {}
 
-    if compare:
-        left, right = st.columns(2, gap="large")
+    with st.container(key=key):
+        render_question(question)
+        left, right = st.columns(2, gap="medium")
         with left:
             side_header("rag")
             rag_status, rag_slot = st.empty(), st.empty()
         with right:
             side_header("llm")
-            llm_slot = st.empty()
-    else:
-        rag_status, rag_slot, llm_slot = st.empty(), st.empty(), None
+            llm_status, llm_slot = st.empty(), st.empty()
+        details_slot = st.empty()
 
-    rag_status.markdown("<div class='status'>🔎 Retrieving sources…</div>", unsafe_allow_html=True)
+    rag_status.markdown("<div class='status'>Retrieving sources…</div>", unsafe_allow_html=True)
+    llm_status.markdown("<div class='status'>&nbsp;</div>", unsafe_allow_html=True)
     threading.Thread(target=_pump, args=(stream_answer(question, strategy), q, "rag"), daemon=True).start()
-    running = {"rag"}
-    if compare:
-        threading.Thread(target=_pump, args=((({"type": "token", "text": t} for t in llm_only_stream(question))),
-                                             q, "llm"), daemon=True).start()
-        running.add("llm")
+    threading.Thread(target=_pump, args=((({"type": "token", "text": t} for t in llm_only_stream(question))),
+                                         q, "llm"), daemon=True).start()
+    running = {"rag", "llm"}
 
     while running:
         try:
@@ -252,9 +276,9 @@ def stream_turn(question: str, strategy: str, compare: bool, fallback: bool) -> 
             running.discard(tag)
             if tag == "llm":  # finalize the LLM column as soon as its own stream ends
                 llm_total = round(time.perf_counter() - t0, 3)
-                with llm_slot.container():
-                    render_llm({"answer": llm_text or f"⚠️ {errors.get('llm', 'no answer')}",
-                                "timings": {"first_token_s": llm_first or 0.0, "total_s": llm_total}})
+                llm_status.markdown(timing_line({"first_token_s": llm_first or 0.0, "total_s": llm_total}),
+                                    unsafe_allow_html=True)
+                llm_slot.markdown(safe_md(llm_text or f"Something went wrong: {errors.get('llm', 'no answer')}"))
         elif kind == "error":
             errors[tag] = ev["error"]
         elif tag == "llm":
@@ -266,37 +290,26 @@ def stream_turn(question: str, strategy: str, compare: bool, fallback: bool) -> 
             if status and not ev["state"].get("refused"):
                 rag_status.markdown(f"<div class='status'>{status}</div>", unsafe_allow_html=True)
         elif kind == "token":
-            rag_status.empty()
             rag_text += ev["text"]
             rag_slot.markdown(cite_markup(rag_text) + CURSOR, unsafe_allow_html=True)
         elif kind == "final":
             rag_state = ev["state"]
 
     # Replace the live text with the finished, fully formatted turn.
-    rag_status.empty()
     if "rag" in errors:
-        rag_state = {"answer": f"⚠️ Something went wrong: {errors['rag']}", "refused": True, "refusal_stage": "",
+        rag_state = {"answer": f"Something went wrong: {errors['rag']}", "refused": True, "refusal_stage": "",
                      "timings": {}, "sources": [], "retrieved": []}
     rag_msg = to_message(rag_state, strategy)
-    turn = {"role": "assistant", "rag": rag_msg}
-    if compare:
-        turn["llm"] = {"answer": llm_text or f"⚠️ {errors.get('llm', 'no answer')}",
-                       "timings": {"first_token_s": llm_first or 0.0, "total_s": llm_total or 0.0}}
-        if fallback and rag_msg["refused"] and llm_text:
-            rag_msg["fallback"] = llm_text                # same answer the right column streamed; no extra call
-        with rag_slot.container():
-            render_rag(rag_msg)
-        with llm_slot.container():
-            render_llm(turn["llm"])
-    else:
-        if fallback and rag_msg["refused"]:
-            rag_status.markdown("<div class='status'>🤖 Asking the model's general knowledge…</div>",
-                                unsafe_allow_html=True)
-            rag_msg["fallback"] = "".join(llm_only_stream(question))
-            rag_status.empty()
-        with rag_slot.container():
-            render_rag(rag_msg)
-    return turn
+    llm = {"answer": llm_text or f"Something went wrong: {errors.get('llm', 'no answer')}",
+           "timings": {"first_token_s": llm_first or 0.0, "total_s": llm_total or 0.0}}
+    if fallback and rag_msg["refused"] and llm_text:
+        rag_msg["fallback"] = llm_text                    # same answer the right column streamed; no extra call
+    rag_status.markdown(timing_line(rag_msg["timings"]), unsafe_allow_html=True)
+    with rag_slot.container():
+        render_rag_body(rag_msg)
+    with details_slot.container():
+        render_details(rag_msg, key)
+    return {"role": "assistant", "question": question, "rag": rag_msg, "llm": llm}
 
 
 # ------------------------------------------------------------------ the tabs
@@ -306,43 +319,66 @@ def render_research_assistant() -> None:
                 "corpus, with citations. If the corpus doesn't have the answer, the assistant says so.</div>",
                 unsafe_allow_html=True)
 
-    # Always side by side, with the configured retrieval strategy (config.DEFAULT_STRATEGY).
-    strategy, compare = config.DEFAULT_STRATEGY, True
-    left, right = st.columns(2, gap="large")              # aligned with the RAG / LLM-only columns below
+    strategy = config.DEFAULT_STRATEGY                   # always side by side, with the configured strategy
+    left, right = st.columns(2, gap="large")              # aligned with the RAG / model-alone columns below
     with left:
-        fallback = st.toggle("🧠 RAG: fall back to the LLM's answer when refused", value=False,
-                             help="When the RAG pipeline refuses (the corpus has no evidence), also show the "
-                                  "model's general-knowledge answer in the RAG column, clearly labelled as "
+        fallback = st.toggle("Allow fallback to model memory", value=False,
+                             help="Applies to the RAG column. When RAG refuses because the corpus has no evidence, "
+                                  "also show the model's own general-knowledge answer there, clearly labelled as "
                                   "unverified and uncited.")
-    with right:
-        if st.columns([2, 1])[1].button("🗑️ Clear chat", width="stretch"):
+    with right, st.container(horizontal=True, horizontal_alignment="right"):
+        if st.button("Clear chat", icon=":material/delete:", width="content", help="Remove all messages"):
             st.session_state.chat_messages = []
             st.rerun()
 
     if "chat_messages" not in st.session_state:
         st.session_state.chat_messages = []
+    turns = [m for m in st.session_state.chat_messages if m.get("role") == "assistant" and "question" in m]
+    st.session_state.chat_messages = turns                # drop entries from the older message format
 
-    chat_area = st.container()                            # messages render here, above the input box
-    for msg in st.session_state.chat_messages:           # replay history
-        with chat_area, st.chat_message(msg["role"]):
-            if msg["role"] == "user":
-                st.markdown(safe_md(msg["content"]))
-            else:
-                render_turn(msg)
+    chat_area = st.container()                            # turns render here, above the input box
+    for i, turn in enumerate(turns):
+        with chat_area:
+            render_turn(turn, key=f"turn_{i}")
+    empty_slot = chat_area.empty()                        # the empty state, until a conversation exists
 
     pending = st.session_state.pop("pending_question", None)
-    prompt = st.chat_input("Ask a question about AI history…") or pending
+    prompt = st.chat_input("Ask about the history of AI, e.g. who coined 'artificial intelligence'?") or pending
+    if not turns and not prompt:
+        with empty_slot.container():
+            render_empty_state()
     if prompt and (blocked := try_spend()):
-        st.warning(blocked, icon="⏳")
+        st.warning(blocked, icon=":material/hourglass_top:")
     elif prompt:
-        st.session_state.chat_messages.append({"role": "user", "content": prompt})
-        with chat_area, st.chat_message("user"):
-            st.markdown(safe_md(prompt))
-        with chat_area, st.chat_message("assistant"):
-            turn = stream_turn(prompt, strategy, compare, fallback)
+        with chat_area:
+            turn = stream_turn(prompt, strategy, fallback, key=f"turn_{len(turns)}")
         st.session_state.chat_messages.append(turn)
     if note := remaining_note():
         st.caption(note)
+
+
+STARTERS = [  # (group, question): shown as clickable chips when the chat is empty
+    ("Popular", "Who proposed the Turing test, and what did he originally call it?"),
+    ("Popular", "Which computer defeated Garry Kasparov at chess, and when?"),
+    ("Curious", "What is the 'ELIZA effect', and who first showed it?"),
+    ("Curious", "Why was the MYCIN expert system never used in clinical practice?"),
+    ("Expert", "How much money did the 1955 Dartmouth proposal request?"),
+    ("Should refuse", "What did Alan Turing think about ChatGPT?"),
+]
+
+
+def render_empty_state() -> None:
+    """What a new visitor sees: what the assistant does, and questions to click."""
+    st.markdown("<div class='empty-lede'>Pick a question to start, or type your own below. The right-hand column "
+                "shows the same model answering from memory, so you can compare.</div>", unsafe_allow_html=True)
+    with st.container(key="starters"):                    # keyed so the CSS can let these buttons wrap
+        for row in (STARTERS[:3], STARTERS[3:]):
+            for col, (group, question) in zip(st.columns(3), row):
+                with col:
+                    st.markdown(f"<div class='chip-group'>{group}</div>", unsafe_allow_html=True)
+                    if st.button(question, key=f"starter_{question}", width="stretch"):
+                        st.session_state.pending_question = question
+                        st.rerun()
 
 
 def render_corpus_timeline(manifest: dict) -> None:
@@ -360,9 +396,10 @@ def render_corpus_timeline(manifest: dict) -> None:
              for k, e in eras.items() if k != "cross_era"]
     y = alt.Y("era:N", sort=lanes, title=None, axis=alt.Axis(labelLimit=260))
     x = alt.X("year:Q", title=None, scale=alt.Scale(domain=[1940, 2026]), axis=alt.Axis(format="d", tickCount=9))
-    band = alt.Chart(alt.Data(values=bands)).mark_bar(opacity=.13, color="#C2603E", cornerRadius=4, height=22).encode(
+    data_color = theme.tokens()["data-1"]                 # corpus documents: a neutral data colour, not RAG
+    band = alt.Chart(alt.Data(values=bands)).mark_bar(opacity=.13, color=data_color, cornerRadius=4, height=22).encode(
         x=alt.X("start:Q", scale=alt.Scale(domain=[1940, 2026])), x2="end:Q", y=y)
-    dots = alt.Chart(alt.Data(values=docs)).mark_circle(size=120, color="#C2603E", opacity=.95,
+    dots = alt.Chart(alt.Data(values=docs)).mark_circle(size=120, color=data_color, opacity=.95,
                                                          stroke="white", strokeWidth=1.5).encode(
         x=x, y=y, tooltip=["title:N", "authors:N", "year:Q", "type:N"])
     st.markdown("#### The primary sources on a timeline")
@@ -381,7 +418,7 @@ def render_corpus_browser() -> None:
                 f"Questions outside these documents are refused.</div>", unsafe_allow_html=True)
     render_corpus_timeline(manifest)
     st.markdown("#### All documents by era")
-    query = st.text_input("Filter", placeholder="🔍 Filter by title or author…", label_visibility="collapsed")
+    query = st.text_input("Filter", placeholder="Filter by title or author…", label_visibility="collapsed")
     for era, info in manifest["eras"].items():
         era_docs = [d for d in docs if d["era"] == era and
                     (not query or query.lower() in (d["title"] + " ".join(d["authors"])).lower())]
@@ -390,20 +427,20 @@ def render_corpus_browser() -> None:
         st.markdown(f"#### {info['label']} · {info['years']}")
         for d in sorted(era_docs, key=lambda d: d["year"]):
             st.markdown(
-                f"{SOURCE_ICON.get(d['source_type'], '📄')} **[{d['title']}]({d['url']})** ({d['year']})  \n"
+                f"**[{d['title']}]({d['url']})** ({d['year']}) <span class='badge base'>{d['source_type']}</span>  \n"
                 f"<span class='src-meta'>{', '.join(d['authors'])} · {d['source_type']} · "
                 f"{d['document_type'].replace('_', ' ')} · {d['why']}</span>", unsafe_allow_html=True)
 
 
 def render_sidebar() -> None:
     with st.sidebar:
-        st.markdown("### Try a question")
-        for group, questions in EXAMPLES.items():
-            st.markdown(f"**{group}**")
-            for q in questions:
-                if st.button(q, key=f"ex_{q}", width="stretch"):
-                    st.session_state.pending_question = q
-                    st.rerun()
+        with st.expander("More sample questions", expanded=False):
+            for group, questions in EXAMPLES.items():
+                st.markdown(f"**{group}**")
+                for q in questions:
+                    if st.button(q, key=f"ex_{q}", width="stretch"):
+                        st.session_state.pending_question = q
+                        st.rerun()
         st.divider()
         st.markdown("### How it works")
         st.caption(
@@ -418,9 +455,9 @@ def render_sidebar() -> None:
 
 def chat_page() -> None:
     inject_css()
-    st.markdown("<div class='app-title'>🧠 AI History Research Assistant</div>", unsafe_allow_html=True)
+    st.title("AI History Research Assistant")
     render_sidebar()
-    tab_chat, tab_corpus = st.tabs(["💬 Research Assistant", "📚 Corpus"])
+    tab_chat, tab_corpus = st.tabs(["Research Assistant", "Corpus"])
     with tab_chat:
         render_research_assistant()
     with tab_corpus:
@@ -440,21 +477,23 @@ def ensure_index() -> bool:
 
 
 def main() -> None:
-    st.set_page_config(page_title="AI History Research Assistant", page_icon="🧠", layout="wide")
+    st.set_page_config(page_title="AI History Research Assistant", page_icon=":material/history_edu:",
+                       layout="wide")
+    theme.apply_theme()                                   # colour/type tokens for every page (ui/theme.py)
     if not ensure_index():
         st.error("The search index could not be built. Check the app logs (OPENAI_API_KEY set in secrets?).")
         st.stop()
     pages = {
-        "home": st.Page(home_page, title="Start here", icon="✨", url_path="start", default=True),
-        "chat": st.Page(chat_page, title="Research Assistant", icon="💬", url_path="assistant"),
-        "results": st.Page(results_page, title="Results: RAG vs the model alone", icon="📊", url_path="results"),
-        "diagram": st.Page(diagram_page, title="System diagram", icon="🗺️", url_path="diagram"),
-        "tokens": st.Page(tokens_page, title="1 · Tokens", icon="🔡", url_path="tokens"),
-        "chunks": st.Page(chunk_viewer_page, title="2 · Chunks", icon="🧩", url_path="chunks"),
-        "embeddings": st.Page(embedding_viewer_page, title="3 · Embeddings", icon="🌌", url_path="embeddings"),
-        "retrieval": st.Page(retrieval_page, title="4 · Retrieval", icon="🔀", url_path="retrieval"),
-        "gate": st.Page(gate_page, title="5 · Score gate & top k", icon="🎚️", url_path="gate"),
-        "prompts": st.Page(prompts_page, title="6 · Prompts & generation", icon="🧾", url_path="prompts"),
+        "home": st.Page(home_page, title="Start here", icon=":material/home:", default=True),
+        "chat": st.Page(chat_page, title="Research Assistant", icon=":material/forum:", url_path="assistant"),
+        "results": st.Page(results_page, title="Results: RAG vs the model alone", icon=":material/leaderboard:", url_path="results"),
+        "diagram": st.Page(diagram_page, title="System diagram", icon=":material/account_tree:", url_path="diagram"),
+        "tokens": st.Page(tokens_page, title="1 · Tokens", icon=":material/text_fields:", url_path="tokens"),
+        "chunks": st.Page(chunk_viewer_page, title="2 · Chunks", icon=":material/view_agenda:", url_path="chunks"),
+        "embeddings": st.Page(embedding_viewer_page, title="3 · Embeddings", icon=":material/scatter_plot:", url_path="embeddings"),
+        "retrieval": st.Page(retrieval_page, title="4 · Retrieval", icon=":material/manage_search:", url_path="retrieval"),
+        "gate": st.Page(gate_page, title="5 · Score gate & top k", icon=":material/tune:", url_path="gate"),
+        "prompts": st.Page(prompts_page, title="6 · Prompts & generation", icon=":material/receipt_long:", url_path="prompts"),
     }
     PAGES.update(pages)
     st.navigation({

@@ -255,16 +255,16 @@ LEARN: dict[str, dict] = {
 
 
 def render_learning(key: str) -> None:
-    """The '🎓 Learn from this step' section at the bottom of a Lab page."""
+    """The 'Learn from this step' section at the bottom of a Lab page."""
     content = LEARN.get(key)
     if not content:
         return
     st.divider()
-    st.markdown("## 🎓 Learn from this step")
+    st.markdown("## Learn from this step")
     st.markdown("#### Key insights")
     st.markdown("\n".join(f"- {line}" for line in content["insights"]))
     st.markdown("#### Test your understanding")
     st.caption("Think about each question first, then open it to check your answer.")
     for question, answer in content["qa"]:
-        with st.expander(f"❓ {question}"):
+        with st.expander(question, icon=":material/help:"):
             st.markdown(answer)

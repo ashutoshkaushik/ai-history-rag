@@ -17,31 +17,28 @@ from langchain_core.callbacks import BaseCallbackHandler
 from lab.learn import render_learning
 from lab.nav import tour_footer
 from lab.usage import remaining_note, try_spend
+from ui import theme
+from ui.components import chunk_card, compare_table
 from rag import config
 from rag.retrieve import get_bm25_retriever, retrieve, rrf_fuse, tokenize
 
 
-COLORS = {"vector": "#2f5bd3", "bm25": "#d97706", "hybrid": "#16a34a"}
-LABELS = {"vector": "🧭 Vector (semantic)", "bm25": "🔤 BM25 (keyword)", "hybrid": "🔀 Hybrid (RRF)"}
+LABELS = {"vector": "Vector (semantic)", "bm25": "BM25 (keyword)", "hybrid": "Hybrid (RRF)"}
+METHOD_SLOT = {"vector": "data-1", "bm25": "data-2", "hybrid": "data-3"}   # retrieval methods: category colours
 
 def lab_css() -> None:
     st.markdown("""
     <style>
       .lab-sub { opacity: .75; margin-bottom: .6rem; }
-      .res { border: 1px solid rgba(127,127,127,.25); border-radius: 8px; padding: .45rem .6rem; margin-bottom: .4rem; }
+      .res { border: 1px solid var(--line); border-radius: 8px; padding: .45rem .6rem; margin-bottom: .4rem; }
       .res .t { font-weight: 600; font-size: .9rem; }
       .res .m { opacity: .68; font-size: .78rem; }
-      .res.gold { border-left: 4px solid #16a34a; }
+      .res.gold { border-left: 4px solid var(--success); }
       .score { font-variant-numeric: tabular-nums; font-weight: 700; }
-      .both { font-size: .7rem; background: rgba(22,163,74,.15); color: #16a34a; border-radius: 99px; padding: 0 6px; margin-left: 4px; }
-      mark { background: rgba(217,119,6,.28); color: inherit; padding: 0 1px; border-radius: 2px; }
+      .both { font-size: .7rem; background: var(--baseline-soft); color: var(--muted); border-radius: 99px; padding: 0 6px; margin-left: 4px; }
+      mark { background: var(--highlight); color: inherit; padding: 0 1px; border-radius: 2px; }
       .snip { font-size: .8rem; opacity: .8; margin-top: .25rem; }
-            .crumbs { font-size: .78rem; margin-bottom: .2rem; line-height: 2; }
-      .crumb { padding: 2px 8px; border-radius: 99px; border: 1px solid rgba(127,127,127,.3); white-space: nowrap; }
-      .crumb { opacity: .75; }
-      .crumb.on { background: #C2603E; border-color: #C2603E; color: #fff; font-weight: 600; opacity: 1; }
-      .arrow { opacity: .5; }
-    </style>""", unsafe_allow_html=True)
+          </style>""", unsafe_allow_html=True)
 
 
 
@@ -69,38 +66,14 @@ def doc_index() -> dict:
     return {d.id: i for i, d in enumerate(bm.docs)}
 
 
-def snippet(text: str, terms: set[str], width: int = 260) -> str:
-    """Body text around the first matched term, with matched terms highlighted."""
-    body = text.split("\n", 1)[-1]
-    low = body.lower()
-    pos = min([low.find(t) for t in terms if low.find(t) >= 0] or [0])
-    start = max(0, pos - 80)
-    piece = html.escape(body[start:start + width].replace("\n", " "))
-    for t in sorted(terms, key=len, reverse=True):
-        piece = re.sub(rf"(?i)\b({re.escape(html.escape(t))})\b", r"<mark>\1</mark>", piece)
-    return ("…" if start else "") + piece + "…"
-
-
-def result_card(doc, score_txt: str, gold: set[str], also_in: list[str], terms: set[str]) -> None:
-    m = doc.metadata
-    is_gold = m["doc_id"] in gold
-    badges = "".join(f"<span class='both'>also in {n}</span>" for n in also_in)
-    where = f" · {m['section'][:40]}" if m.get("section") else ""
-    st.markdown(
-        f"<div class='res{' gold' if is_gold else ''}'><span class='score'>{score_txt}</span> "
-        f"{'✓ ' if is_gold else ''}<span class='t'>{html.escape(m['title'][:60])}</span> ({m['year']}){badges}"
-        f"<div class='m'>{m['source_type']}{html.escape(where)}</div>"
-        f"<div class='snip'>{snippet(doc.page_content, terms)}</div></div>", unsafe_allow_html=True)
-
-
 # ---------------------------------------------- step 4 · retrieval
 
 def retrieval_tab() -> None:
     st.markdown("<div class='lab-sub'>The same question, three ways of finding chunks. <b>Vector</b> search "
                 "compares meaning (embeddings, cosine similarity). <b>BM25</b> counts shared keywords, weighting "
                 "rare words higher. <b>Hybrid</b> fuses both ranked lists with Reciprocal Rank Fusion, the "
-                "course's notebook-3 approach. ✓ and a green edge mark a correct (gold) document for test "
-                "questions.</div>", unsafe_allow_html=True)
+                "course's notebook-3 approach. For test questions, a green border and ✓ Gold mark a document that "
+                "contains the answer.</div>", unsafe_allow_html=True)
 
     qs = golden()
     labels = {f"{q['id']} [{q['category']}] {q['question']}": q for q in qs}
@@ -135,28 +108,38 @@ def retrieval_tab() -> None:
     def others(doc_id: str, me: str) -> list[str]:
         return [n for n in ("vector", "bm25") if n != me and doc_id in top_ids[n]]
 
-    cols = st.columns(3, gap="medium")
-    for col, name in zip(cols, ("vector", "bm25", "hybrid")):
-        with col:
-            hit = next((r for r, i in enumerate(top_ids[name], 1)
-                        if docs_by_id[i].metadata["doc_id"] in gold), None) if gold else None
-            verdict = ("" if not gold else f" · first ✓ at rank {hit}" if hit else " · ✗ no gold doc in top k")
-            st.markdown(f"<div style='border-bottom:3px solid {COLORS[name]};font-weight:700'>{LABELS[name]}"
-                        f"<span style='font-weight:400;opacity:.68;font-size:.8rem'>{verdict}</span></div>",
-                        unsafe_allow_html=True)
-            if name == "vector":
-                for d, (_, s) in zip(vec_docs[:k], vec[:k]):
-                    result_card(d, f"{s:.3f}", gold, others(d.id, name), qterms)
-            elif name == "bm25":
-                for d, (_, s) in zip(bm_docs[:k], bm[:k]):
-                    matched = {t for t in qterms if t in bm25.vectorizer.doc_freqs[idx[d.id]]}
-                    result_card(d, f"{s:.1f}", gold, others(d.id, name), matched)
-            else:
-                for d, s, _ in fused:
-                    result_card(d, f"{s:.4f}", gold, [], qterms)
+    # scores for each method's list (vector: cosine, BM25: raw BM25, hybrid: RRF)
+    lists = {
+        "vector": [(d, s, set()) for d, (_, s) in zip(vec_docs[:k], vec[:k])],
+        "bm25": [(d, s, {t for t in qterms if t in bm25.vectorizer.doc_freqs[idx[d.id]]}) for d, (_, s) in zip(bm_docs[:k], bm[:k])],
+        "hybrid": [(d, s, set()) for d, s, _ in fused],
+    }
+    kind = {"vector": "cosine", "bm25": "BM25", "hybrid": "RRF"}
+    st.caption("Scores are not comparable across methods: cosine similarity runs 0–1, BM25 is unbounded and depends "
+               "on the question's words, and RRF only reflects ranks. Compare ranks, not numbers, between columns.")
+    compact = st.toggle("Compact view", value=False, help="One table: rows are ranks, columns are methods (titles only).")
+    if compact:
+        compare_table({LABELS[n]: [(f"{d.metadata['title']} ({d.metadata['year']})", d.metadata["doc_id"] in gold)
+                                   for d, _, _ in lists[n]] for n in lists}, k)
+    else:
+        cols = st.columns(3, gap="medium")
+        for col, name in zip(cols, ("vector", "bm25", "hybrid")):
+            with col:
+                st.markdown(f"<div style='border-bottom:3px solid var(--{METHOD_SLOT[name]});font-weight:700;"
+                            f"padding-bottom:.2rem'>{LABELS[name]}</div>", unsafe_allow_html=True)
+                if gold:
+                    hit = next((r for r, (d, _, _) in enumerate(lists[name], 1) if d.metadata["doc_id"] in gold), None)
+                    st.markdown(f"<span class='badge ok'>✓ Gold found at rank {hit}</span>" if hit else
+                                f"<span class='badge no'>✗ Gold not in top {k}</span>", unsafe_allow_html=True)
+                for r, (d, s, matched) in enumerate(lists[name], 1):
+                    m = d.metadata
+                    chunk_card(rank=r, title=m["title"], year=m["year"], text=d.page_content, score=s,
+                               score_kind=kind[name], section=m.get("section"), source_type=m["source_type"],
+                               gold=m["doc_id"] in gold, notes=[f"also in {LABELS[o].split(' ')[0]}" for o in others(d.id, name)],
+                               terms=matched if name == "bm25" else set(), key=f"ret_{name}_{r}")
 
     # ---- why BM25 ranked what it did
-    with st.expander("🔤 How BM25 saw this question: tokens, rarity (IDF), and which chunks contain them"):
+    with st.expander("How BM25 saw this question: tokens, rarity (IDF), and which chunks contain them"):
         n_docs = len(bm25.docs)
         rows = []
         for t in dict.fromkeys(tokens):
@@ -169,7 +152,7 @@ def retrieval_tab() -> None:
                    "contribute nothing. Exact names and numbers are where BM25 shines, and paraphrases are where it fails.")
 
     # ---- the RRF arithmetic
-    with st.expander("🔀 How hybrid fused the lists: the RRF arithmetic, step by step"):
+    with st.expander("How hybrid fused the lists: the RRF arithmetic, step by step"):
         st.latex(r"\text{RRF}(d) = \sum_{\text{list}} \frac{w_{\text{list}}}{c + \text{rank}_{\text{list}}(d)}")
         rows = []
         for d, s, ranks in fused:
@@ -219,7 +202,7 @@ def retrieval_tab() -> None:
 
 # Validated categorical slots 1-3 (dataviz reference palette, all-pairs CVD-safe). Slot 3 (aqua) is
 # below 3:1 contrast on white, so every chart also has shapes + a table view (relief rule).
-SERIES = ["#2a78d6", "#eb6834", "#1baf7a"]
+# Category colours come from ui/theme.py (data-1..3: violet, yellow, magenta; never RAG blue or success green).
 GROUPS = {"answer": "Answerable (28)", "refuse": "Not in corpus (4)", "offtopic": "Off-topic (2)"}
 METHODS = {"vector": "Vector", "bm25": "BM25", "hybrid": "Hybrid (RRF 50/50)"}
 
@@ -279,17 +262,19 @@ def threshold_k_tab() -> None:
     caught_ref = sum(p["group"] == GROUPS["refuse"] and p["best similarity"] < thr for p in pts)
     wrong = sum(p["group"] == GROUPS["answer"] and p["best similarity"] < thr for p in pts)
     m1, m2, m3 = st.columns(3)
-    m1.metric("Off-topic caught by the gate", f"{caught_off}/{n_off}")
-    m2.metric("Not-in-corpus caught by the gate", f"{caught_ref}/{n_ref}",
+    m1.metric("Off-topic caught", f"{caught_off}/{n_off}",
+              help="Questions not about AI at all (astronomy) refused by the score gate at this threshold.")
+    m2.metric("Not-in-corpus caught", f"{caught_ref}/{n_ref}",
               help="These usually score high (related topics), so the LLM evidence check has to catch them.")
-    m3.metric("Answerable wrongly refused", f"{wrong}/{n_ans}", delta=None if not wrong else "false refusals",
-              delta_color="inverse")
+    m3.metric("Wrongly refused", f"{wrong}/{n_ans}", delta=None if not wrong else "false refusals",
+              delta_color="inverse",
+              help="Answerable questions (the answer is in the corpus) that the gate would refuse at this threshold.")
 
     domain = list(GROUPS.values())
-    color = alt.Color("group:N", scale=alt.Scale(domain=domain, range=SERIES), legend=alt.Legend(orient="top", title=None, labelLimit=400))
+    color = alt.Color("group:N", scale=alt.Scale(domain=domain, range=theme.categorical()), legend=alt.Legend(orient="top", title=None, labelLimit=400))
     shape = alt.Shape("group:N", scale=alt.Scale(domain=domain, range=["circle", "diamond", "triangle-up"]), legend=None)
     base = alt.Chart(alt.Data(values=pts))
-    zone = alt.Chart(alt.Data(values=[{"x0": 0, "x1": thr}])).mark_rect(opacity=.08, color="#8a867c").encode(
+    zone = alt.Chart(alt.Data(values=[{"x0": 0, "x1": thr}])).mark_rect(opacity=.08, color=theme.tokens()["muted"]).encode(
         x="x0:Q", x2="x1:Q")
     dots = base.mark_point(size=110, filled=True, stroke="white", strokeWidth=1.5).encode(
         x=alt.X("best similarity:Q", scale=alt.Scale(domain=[0, .9]), title="best (top-1) cosine similarity"),
@@ -297,8 +282,8 @@ def threshold_k_tab() -> None:
         yOffset=alt.YOffset("jitter:Q", scale=alt.Scale(domain=[-1, 1])), color=color, shape=shape,
         tooltip=["id:N", "question:N", "best similarity:Q", "at this threshold:N", "last eval run:N"],
     ).transform_calculate(jitter="random()*1.6-0.8")
-    rule = alt.Chart(alt.Data(values=[{"t": thr}])).mark_rule(strokeDash=[4, 3], strokeWidth=2, color="#8a867c").encode(x="t:Q")
-    label = rule.mark_text(align="left", dx=6, dy=-8, fontSize=12, color="#8a867c").encode(
+    rule = alt.Chart(alt.Data(values=[{"t": thr}])).mark_rule(strokeDash=[4, 3], strokeWidth=2, color=theme.tokens()["muted"]).encode(x="t:Q")
+    label = rule.mark_text(align="left", dx=6, dy=-8, fontSize=12, color=theme.tokens()["muted"]).encode(
         y=alt.value(0), text=alt.value(f"gate = {thr:.2f}  (refuse ←)"))
     st.altair_chart((zone + dots + rule + label).properties(height=300), width="stretch")
     st.caption("Each dot is one test question at its best retrieved similarity; hover for details. Left of the dashed "
@@ -316,13 +301,13 @@ def threshold_k_tab() -> None:
     sc = alt.Chart(alt.Data(values=sweep)).encode(
         x=alt.X("threshold:Q", title="score gate threshold"),
         y=alt.Y("percent:Q", title="% of questions", scale=alt.Scale(domain=[0, 100])),
-        color=alt.Color("series:N", scale=alt.Scale(domain=sdomain, range=SERIES[1::-1]),
+        color=alt.Color("series:N", scale=alt.Scale(domain=sdomain, range=theme.categorical()[:2]),
                         legend=alt.Legend(orient="top", title=None, labelLimit=400)))
     hover = alt.selection_point(fields=["threshold"], nearest=True, on="pointerover", empty=False)
     lines = sc.mark_line(strokeWidth=2, interpolate="step-after")
     hits = sc.mark_point(size=60, filled=True).encode(opacity=alt.condition(hover, alt.value(1), alt.value(0)),
                                                        tooltip=["threshold:Q", "series:N", alt.Tooltip("percent:Q", format=".0f")]).add_params(hover)
-    now = alt.Chart(alt.Data(values=[{"t": thr}])).mark_rule(strokeDash=[4, 3], color="#8a867c").encode(x="t:Q")
+    now = alt.Chart(alt.Data(values=[{"t": thr}])).mark_rule(strokeDash=[4, 3], color=theme.tokens()["muted"]).encode(x="t:Q")
     st.altair_chart((lines + hits + now).properties(height=240), width="stretch")
     st.caption("Sweeping the threshold: the gate only ever catches the 2 off-topic questions before it starts refusing "
                "answerable ones. The safe zone is roughly 0.22–0.47; 0.35 sits in the middle of it.")
@@ -351,13 +336,13 @@ def threshold_k_tab() -> None:
     kc = alt.Chart(alt.Data(values=curve)).encode(
         x=alt.X("k:Q", title="top k chunks retrieved", scale=alt.Scale(domain=[1, 20])),
         y=alt.Y("percent:Q", title=f"% of {len(answerable)} questions with a hit", scale=alt.Scale(domain=[40, 100])),
-        color=alt.Color("method:N", scale=alt.Scale(domain=kdomain, range=SERIES), legend=alt.Legend(orient="top", title=None, labelLimit=400)),
+        color=alt.Color("method:N", scale=alt.Scale(domain=kdomain, range=theme.categorical()), legend=alt.Legend(orient="top", title=None, labelLimit=400)),
         shape=alt.Shape("method:N", scale=alt.Scale(domain=kdomain, range=["circle", "diamond", "triangle-up"]), legend=None))
     khover = alt.selection_point(fields=["k"], nearest=True, on="pointerover", empty=False)
     klines = kc.mark_line(strokeWidth=2) + kc.mark_point(size=70, filled=True).encode(
         opacity=alt.condition(khover, alt.value(1), alt.value(.25)),
         tooltip=["method:N", "k:Q", "hits:Q", alt.Tooltip("percent:Q", format=".0f")]).add_params(khover)
-    know = alt.Chart(alt.Data(values=[{"k": config.TOP_K}])).mark_rule(strokeDash=[4, 3], color="#8a867c").encode(x="k:Q")
+    know = alt.Chart(alt.Data(values=[{"k": config.TOP_K}])).mark_rule(strokeDash=[4, 3], color=theme.tokens()["muted"]).encode(x="k:Q")
     st.altair_chart((klines + know).properties(height=300), width="stretch")
     ctx = config.TOP_K * 567
     st.caption(f"The dashed line is the current TOP_K = {config.TOP_K}. Every extra chunk adds ~567 tokens that "
@@ -420,8 +405,9 @@ def run_inspected(question: str) -> dict:
                          "question": q, "output": call["usage"].get("output_tokens", 0)}
         call["cached"] = (call["usage"].get("input_token_details") or {}).get("cache_read", 0)
     return {"question": question, "state": state, "calls": rec.calls, "total": total,
-            "retrieved": [{"rank": i, "similarity": round(s, 3), "document": d.metadata["title"][:60],
+            "retrieved": [{"rank": i, "similarity": round(s, 3), "document": d.metadata["title"],
                            "year": d.metadata["year"], "section": d.metadata.get("section") or "",
+                           "source_type": d.metadata["source_type"], "text": d.page_content,
                            "tokens": len(enc.encode(d.page_content))}
                           for i, (d, s) in enumerate(state.get("retrieved", []), 1)]}
 
@@ -461,9 +447,9 @@ def prompt_inspector_tab() -> None:
                      "same question asked again. Cached input is cheaper and faster. The two calls here start "
                      "differently, so they don't share a cache entry with each other.")
     m[4].metric("Output tokens", f"{sum(c['usage'].get('output_tokens', 0) for c in calls):,}")
-    outcome = (f"🛑 Refused at the **{s['refusal_stage'].replace('_', ' ')}**" if s["refused"]
-               else f"✅ Answered, citing {len(s['sources'])} source(s)")
-    st.markdown(outcome)
+    outcome = (f"<span class='badge refuse'>Refused</span> at the {s['refusal_stage'].replace('_', ' ')}"
+               if s["refused"] else f"<span class='badge ok'>✓ Answered</span> citing {len(s['sources'])} source(s)")
+    st.markdown(outcome, unsafe_allow_html=True)
 
     # ---- timeline
     st.markdown("#### Where the time goes")
@@ -478,9 +464,9 @@ def prompt_inspector_tab() -> None:
     gantt = alt.Chart(alt.Data(values=segs)).encode(y=alt.Y("step:N", sort=order, title=None, axis=alt.Axis(labelLimit=260)))
     bars = gantt.mark_bar(cornerRadius=4, height=22).encode(
         x=alt.X("start:Q", title="seconds since the question arrived"), x2="end:Q",
-        color=alt.Color("step:N", scale=alt.Scale(domain=order, range=SERIES), legend=None),
+        color=alt.Color("step:N", scale=alt.Scale(domain=order, range=theme.categorical()), legend=None),
         tooltip=["step:N", "seconds:Q"])
-    text = gantt.mark_text(align="left", dx=6, color="#8a867c").encode(x="end:Q", text="label:N")
+    text = gantt.mark_text(align="left", dx=6, color=theme.tokens()["muted"]).encode(x="end:Q", text="label:N")
     st.altair_chart((bars + text).properties(height=150), width="stretch")
     st.caption("Steps run one after another. Retrieval is one embedding call plus a Chroma lookup; each LLM "
                "step has to read the whole prompt before it writes anything. In the chat, the generate step "
@@ -497,7 +483,7 @@ def prompt_inspector_tab() -> None:
             y=alt.Y("call:N", sort=present, title=None, axis=alt.Axis(labelLimit=260),
                     scale=alt.Scale(paddingInner=0.35)),
             x=alt.X("sum(tokens):Q", title="tokens"),
-            color=alt.Color("part:N", scale=alt.Scale(domain=parts, range=SERIES + ["#eda100"]),
+            color=alt.Color("part:N", scale=alt.Scale(domain=parts, range=theme.categorical() + [theme.tokens()["baseline"]]),
                             legend=alt.Legend(orient="top", title=None)),
             order=alt.Order("order:Q"), tooltip=["call:N", "part:N", "tokens:Q"])
         st.altair_chart(budget.properties(height=70 * len(calls) + 20), width="stretch")
@@ -525,8 +511,11 @@ def prompt_inspector_tab() -> None:
     with st.expander("Why each rule in the answer prompt is there"):
         for rule, why in PROMPT_RULES:
             st.markdown(f"- **{rule}.** {why}")
-    with st.expander(f"The {len(res['retrieved'])} retrieved chunks (in prompt order)"):
-        st.dataframe(res["retrieved"], hide_index=True, width="stretch")
+    with st.expander(f"The {len(res['retrieved'])} retrieved chunks, in prompt order ([1]…[{len(res['retrieved'])}])"):
+        for c in res["retrieved"]:
+            chunk_card(rank=c["rank"], title=c["document"], year=c["year"], text=c["text"], score=c["similarity"],
+                       score_kind="cosine", section=c["section"], source_type=c["source_type"],
+                       notes=[f"{c['tokens']} tokens"], key=f"pi_{c['rank']}")
 
 
 # ------------------------------------------------- step 1 · tokens
@@ -539,7 +528,7 @@ PRESETS = {  # (doc_id, regex) -> a real passage from the corpus, found at runti
     "ELIZA 1966: OCR noise from an old scan": ("weizenbaum_eliza_1966", r"usclls|Tcchnu"),
     "Wikipedia RLHF: math extracted as LaTeX": ("wiki_rlhf", r"pretrain\n"),
 }
-TOKEN_TINTS = ["rgba(42,120,214,.16)", "rgba(235,104,52,.16)"]   # alternate only to show boundaries
+TOKEN_TINTS = ["var(--baseline-soft)", "var(--highlight)"]     # alternate only to show token boundaries
 
 
 @st.cache_data
@@ -595,7 +584,7 @@ def tokenizer_tab() -> None:
                 "model's. Everything on this page runs locally, with no API calls.</div>", unsafe_allow_html=True)
     st.markdown("""<style>
       .tokbox { font: 13px/2 ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-word; }
-      .tok { border-radius: 3px; padding: 1px 0; margin-right: 1px; box-shadow: inset 0 0 0 1px rgba(127,127,127,.25); }
+      .tok { border-radius: 3px; padding: 1px 0; margin-right: 1px; box-shadow: inset 0 0 0 1px var(--line); }
       .ws { opacity: .45; }
     </style>""", unsafe_allow_html=True)
 
@@ -616,7 +605,8 @@ def tokenizer_tab() -> None:
             a, b, c = st.columns(3)
             a.metric("Tokens", len(rows))
             b.metric("Characters", len(text))
-            c.metric("Chars per token", f"{len(text) / max(len(rows), 1):.2f}")
+            c.metric("Chars/token", f"{len(text) / max(len(rows), 1):.2f}",
+                     help="Average characters per token. Higher means cleaner, cheaper text.")
             st.markdown(f"<div class='tokbox'>{spans}</div>", unsafe_allow_html=True)
             with st.expander("Token list"):
                 st.dataframe(rows, hide_index=True, width="stretch")
@@ -640,13 +630,13 @@ def tokenizer_tab() -> None:
     st.markdown("#### How efficiently each document tokenizes")
     eff = sorted(corpus_efficiency(), key=lambda r: r["chars per token"])
     show = eff[:8] + eff[-8:]
-    chart = alt.Chart(alt.Data(values=show)).mark_bar(cornerRadius=3, color=SERIES[0]).encode(
+    chart = alt.Chart(alt.Data(values=show)).mark_bar(cornerRadius=3, color=theme.tokens()["data-1"]).encode(
         y=alt.Y("doc:N", sort=[r["doc"] for r in show], title=None,
                 axis=alt.Axis(labelLimit=340, labelOverlap=False)),
         x=alt.X("chars per token:Q", title="characters per token (cl100k_base; higher = cleaner prose)",
                 axis=alt.Axis(tickCount=6)),
         tooltip=["doc:N", "type:N", "chars:Q", "tokens:Q", "chars per token:Q"])
-    labels = chart.mark_text(align="left", dx=4, color="#8a867c").encode(text=alt.Text("chars per token:Q", format=".2f"))
+    labels = chart.mark_text(align="left", dx=4, color=theme.tokens()["muted"]).encode(text=alt.Text("chars per token:Q", format=".2f"))
     st.altair_chart(chart + labels, height=16 * 30, width="stretch")
     avg = sum(r["chars"] for r in eff) / sum(r["tokens"] for r in eff)
     st.caption(f"The 8 least and 8 most efficient of {len(eff)} documents (corpus average {avg:.2f} characters per "
@@ -660,12 +650,12 @@ def tokenizer_tab() -> None:
 # ------------------------------------------------------------ pipeline pages
 
 PIPELINE = [  # (key, icon, name, what happens at this step) in the order data flows through the system
-    ("tokens", "🔡", "Tokens", "Text is split into tokens, the unit every size, cost and limit is measured in."),
-    ("chunks", "🧩", "Chunks", "Each cleaned document is split into ~600-token chunks, each with a title/section header."),
-    ("embeddings", "🌌", "Embeddings", "Each chunk becomes a 1,536-number vector; similar meanings end up close together."),
-    ("retrieval", "🔀", "Retrieval", "A question is matched against all chunks by meaning (vector), keywords (BM25) or both."),
-    ("gate", "🎚️", "Score gate & top k", "Decide whether to refuse without an LLM call, and how many chunks the LLM reads."),
-    ("prompts", "🧾", "Prompts & generation", "The evidence check and the answer: exactly what each LLM call receives and returns."),
+    ("tokens", ":material/text_fields:", "Tokens", "Text is split into tokens, the unit every size, cost and limit is measured in."),
+    ("chunks", ":material/view_agenda:", "Chunks", "Each cleaned document is split into ~600-token chunks, each with a title/section header."),
+    ("embeddings", ":material/scatter_plot:", "Embeddings", "Each chunk becomes a 1,536-number vector; similar meanings end up close together."),
+    ("retrieval", ":material/manage_search:", "Retrieval", "A question is matched against all chunks by meaning (vector), keywords (BM25) or both."),
+    ("gate", ":material/tune:", "Score gate & top k", "Decide whether to refuse without an LLM call, and how many chunks the LLM reads."),
+    ("prompts", ":material/receipt_long:", "Prompts & generation", "The evidence check and the answer: exactly what each LLM call receives and returns."),
 ]
 
 
@@ -677,7 +667,7 @@ def pipeline_header(key: str) -> None:
     crumbs = " <span class='arrow'>→</span> ".join(
         f"<span class='crumb{' on' if n == i else ''}'>{n + 1} · {s[2]}</span>" for n, s in enumerate(PIPELINE))
     st.markdown(f"<div class='crumbs'>{crumbs}</div>", unsafe_allow_html=True)
-    st.title(f"{icon} {i + 1} · {name}")
+    st.title(f"{i + 1} · {name}")
     st.markdown(f"<div class='lab-sub'><b>This step:</b> {what}</div>", unsafe_allow_html=True)
 
 

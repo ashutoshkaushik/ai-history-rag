@@ -31,7 +31,7 @@ def _embed(path: Path, height: int, how_to_build: str) -> None:
 
 
 def diagram_page() -> None:
-    st.title("🗺️ System diagram")
+    st.title("System diagram")
     st.caption("How the pieces fit: offline ingestion into Chroma, then the LangGraph flow that answers "
                "(or refuses) each question, with the LLM-only baseline alongside.")
     _embed(DIAGRAM, 1700, "(assets/system_diagram.html is part of the repo)")
@@ -46,7 +46,7 @@ def chunk_viewer_page() -> None:
     if config.PUBLIC_DEPLOYMENT:
         st.info("On this public site, full text is shown only for the openly licensed (CC BY-SA) Wikipedia "
                 "articles. The other 36 documents (journal papers, reports, arXiv preprints) are searched and "
-                "quoted in answers, but not republished here in full.", icon="📄")
+                "quoted in answers, but not republished here in full.", icon=":material/description:")
     _embed(CHUNK_VIEWER, 900, "uv run python scripts/visualize_chunks.py")
     from lab.learn import render_learning
     render_learning("chunks")
