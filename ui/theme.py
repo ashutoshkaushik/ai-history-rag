@@ -107,6 +107,11 @@ def apply_theme() -> None:
   .badge.base {{ background: var(--baseline-soft); color: var(--muted); }}
   .badge + .badge, .cc-score + .badge {{ margin-left: .3rem; }}
 
+  /* ---- Site chrome (ui/chrome.py) */
+  .author-name {{ font-family: var(--font-heading); font-size: 1.05rem; font-weight: 600; margin-bottom: .35rem; }}
+  .site-footer {{ margin-top: 3rem; padding-top: .9rem; border-top: 1px solid var(--line); color: var(--muted);
+                  font-size: .8rem; text-align: center; }}
+
   /* ---- Chunk card (ui/components.chunk_card): rank, typed score, title, 3-line preview */
   [class*="st-key-ccgold_"] {{ border: 2px solid var(--success) !important; background: var(--success-soft); }}
   .cc-top {{ display: flex; align-items: center; flex-wrap: wrap; gap: .35rem .5rem; margin-bottom: .2rem; }}

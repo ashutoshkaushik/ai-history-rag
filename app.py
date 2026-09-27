@@ -30,7 +30,8 @@ import yaml
 
 from lab.explore_pages import chunk_viewer_page, diagram_page, embedding_viewer_page
 from lab.nav import PAGES, TOUR
-from ui import theme
+from lab.code_page import code_page
+from ui import chrome, theme
 from ui.components import chunk_card
 from lab.usage import remaining_note, try_spend
 from lab.rag_lab import gate_page, prompts_page, retrieval_page, tokens_page
@@ -457,11 +458,13 @@ def chat_page() -> None:
     inject_css()
     st.title("AI History Research Assistant")
     render_sidebar()
-    tab_chat, tab_corpus = st.tabs(["Research Assistant", "Corpus"])
-    with tab_chat:
-        render_research_assistant()
-    with tab_corpus:
-        render_corpus_browser()
+    render_research_assistant()
+
+
+def corpus_page() -> None:
+    inject_css()
+    st.title("Corpus")
+    render_corpus_browser()
 
 
 @st.cache_resource
@@ -499,6 +502,8 @@ def main() -> None:
         "home": st.Page(home_page, title="Start here", icon=":material/home:", default=True),
         "chat": st.Page(chat_page, title="Research Assistant", icon=":material/forum:", url_path="assistant"),
         "results": st.Page(results_page, title="Results: RAG vs the model alone", icon=":material/leaderboard:", url_path="results"),
+        "corpus": st.Page(corpus_page, title=f"Corpus: the {len(load_manifest()['documents'])} sources", icon=":material/library_books:", url_path="corpus"),
+        "code": st.Page(code_page, title="How it's built: the code", icon=":material/code:", url_path="code"),
         "diagram": st.Page(diagram_page, title="System diagram", icon=":material/account_tree:", url_path="diagram"),
         "tokens": st.Page(tokens_page, title="1 · Tokens", icon=":material/text_fields:", url_path="tokens"),
         "chunks": st.Page(chunk_viewer_page, title="2 · Chunks", icon=":material/view_agenda:", url_path="chunks"),
@@ -508,11 +513,14 @@ def main() -> None:
         "prompts": st.Page(prompts_page, title="6 · Prompts & generation", icon=":material/receipt_long:", url_path="prompts"),
     }
     PAGES.update(pages)
-    st.navigation({
+    page = st.navigation({
         "App": [pages["home"], pages["chat"]],
-        "Overview": [pages["results"], pages["diagram"]],
+        "Overview": [pages["results"], pages["corpus"], pages["diagram"], pages["code"]],
         "RAG Lab · the pipeline, step by step": [pages[k] for k in TOUR],
-    }).run()
+    })
+    page.run()
+    chrome.author_card()                                   # bottom of the sidebar, on every page
+    chrome.footer()                                        # bottom of every page
 
 
 if __name__ == "__main__":
