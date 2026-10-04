@@ -9,6 +9,15 @@ A citation-grounded RAG (retrieval-augmented generation) app that answers questi
 [AI History Research Assistant](https://ai-history-rag.streamlit.app/) (RAG) ·
 [Travel Agent Lab](https://ai-travel-agent.streamlit.app/) (multi-agent)
 
+## Screenshots
+
+| | |
+|---|---|
+| ![Start here: RAG in one minute](docs/screenshots/start-here.png) | ![Results: RAG vs the model alone](docs/screenshots/results.png) |
+| Start here: RAG in one minute | Results: RAG vs the model alone |
+| ![RAG Lab 3: every chunk embedding on a 2D map](docs/screenshots/embeddings.png) | ![RAG Lab 4: vector, BM25 and hybrid search side by side](docs/screenshots/retrieval.png) |
+| RAG Lab 3: every chunk embedding on a 2D map | RAG Lab 4: vector, BM25 and hybrid search side by side |
+
 ## What's inside
 
 The sidebar groups the pages. Light and dark themes follow your system setting.
