@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "AI History Research Assistant: RAG architecture",
+    "output": "docs/architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/ashutoshkaushik/ai-history-rag",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "37058a599eaad7559f9be13c81cc7dff809f5a64"
+    }
+  },
+  "components": [
+    { "id": "visitor", "type": "external", "label": "Visitor", "sublabel": "browser", "pos": [20, 90], "size": [120, 64] },
+    { "id": "chat", "type": "frontend", "label": "Research Assistant", "sublabel": "app.py · chat + side by side", "pos": [200, 90], "size": [180, 64],
+      "sources": [
+        { "path": "app.py", "line": 318, "end_line": 356, "label": "chat page" },
+        { "path": "app.py", "line": 494, "end_line": 527, "label": "st.navigation" }
+      ] },
+    { "id": "caps", "type": "security", "label": "Usage caps", "sublabel": "lab/usage.py · try_spend()", "pos": [470, 90], "size": [150, 64], "tag": "public mode only",
+      "sources": [
+        { "path": "lab/usage.py", "line": 28, "end_line": 45, "label": "per-visit and per-day caps" },
+        { "path": "app.py", "line": 351, "end_line": 352, "label": "checked before answering" }
+      ] },
+    { "id": "baseline", "type": "backend", "label": "LLM-only baseline", "sublabel": "baseline.py · no retrieval", "pos": [725, 90], "size": [160, 64],
+      "sources": [
+        { "path": "src/rag/baseline.py", "line": 9, "end_line": 18, "label": "llm_only_stream()" },
+        { "path": "app.py", "line": 265, "end_line": 267, "label": "runs in a parallel thread" }
+      ] },
+    { "id": "openai", "type": "external", "label": "OpenAI API", "sublabel": "gpt-4.1-mini · embeddings", "pos": [975, 90], "size": [160, 64], "tag": "OPENAI_API_KEY",
+      "sources": [
+        { "path": "src/rag/models.py", "line": 11, "end_line": 19, "label": "ChatOpenAI / OpenAIEmbeddings" },
+        { "path": "src/rag/config.py", "line": 19, "end_line": 23, "label": "model names" }
+      ] },
+    { "id": "chroma", "type": "database", "label": "Chroma index", "sublabel": "data/chroma · cosine", "pos": [200, 280], "size": [160, 64],
+      "sources": [{ "path": "src/rag/retrieve.py", "line": 23, "end_line": 31, "label": "get_vector_store()" }] },
+    { "id": "retrieve", "type": "backend", "label": "retrieve", "sublabel": "rag_graph.py · top-5 chunks", "pos": [470, 280], "size": [150, 64],
+      "sources": [
+        { "path": "src/rag/rag_graph.py", "line": 78, "end_line": 82, "label": "retrieve_node" },
+        { "path": "src/rag/retrieve.py", "line": 93, "end_line": 99, "label": "similarity search" }
+      ] },
+    { "id": "grade", "type": "backend", "label": "grade_evidence", "sublabel": "LLM judge · structured", "pos": [725, 280], "size": [160, 64],
+      "sources": [
+        { "path": "src/rag/rag_graph.py", "line": 85, "end_line": 92, "label": "grade_node" },
+        { "path": "src/rag/prompts.py", "line": 26, "end_line": 41, "label": "GRADE_PROMPT" }
+      ] },
+    { "id": "generate", "type": "backend", "label": "generate", "sublabel": "answer with [n] citations", "pos": [975, 280], "size": [160, 64],
+      "sources": [{ "path": "src/rag/rag_graph.py", "line": 95, "end_line": 105, "label": "generate_node" }] },
+    { "id": "refuse", "type": "security", "label": "refuse", "sublabel": "not in the corpus", "pos": [725, 470], "size": [160, 64],
+      "sources": [
+        { "path": "src/rag/rag_graph.py", "line": 108, "end_line": 120, "label": "refuse_node + routing" },
+        { "path": "src/rag/config.py", "line": 46, "end_line": 53, "label": "MIN_SIMILARITY + message" }
+      ] },
+    { "id": "pipeline", "type": "backend", "label": "Corpus pipeline", "sublabel": "download → clean → chunk → embed", "pos": [200, 470], "size": [180, 64], "tag": "offline / first start",
+      "sources": [
+        { "path": "src/rag/bootstrap.py", "line": 14, "end_line": 38, "label": "build steps" },
+        { "path": "src/rag/ingest.py", "line": 255, "end_line": 290, "label": "incremental upsert" }
+      ] },
+    { "id": "hosts", "type": "external", "label": "Original hosts", "sublabel": "55 papers · pages · Wikipedia", "pos": [200, 640], "size": [180, 64],
+      "sources": [{ "path": "scripts/download_corpus.py", "line": 24, "end_line": 58, "label": "download_corpus.py" }] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "LangGraph RAG graph · rag_graph.py", "wraps": ["retrieve", "grade", "generate", "refuse"] }
+  ],
+  "connections": [
+    { "id": "visit", "from": "visitor", "to": "chat", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "ask", "from": "chat", "to": "caps", "label": "question", "variant": "emphasis" },
+    { "id": "to-graph", "from": "caps", "to": "retrieve", "label": "RAG", "variant": "emphasis" },
+    { "id": "to-baseline", "from": "caps", "to": "baseline", "label": "compare" },
+    { "id": "baseline-chat", "from": "baseline", "to": "openai", "label": "chat" },
+    { "id": "search", "from": "retrieve", "to": "chroma", "label": "top-5 search" },
+    { "id": "score-ok", "from": "retrieve", "to": "grade", "label": "score ≥ 0.35", "variant": "emphasis" },
+    { "id": "sufficient", "from": "grade", "to": "generate", "label": "sufficient", "variant": "emphasis" },
+    { "id": "score-low", "from": "retrieve", "to": "refuse", "label": "score < 0.35", "variant": "security" },
+    { "id": "insufficient", "from": "grade", "to": "refuse", "label": "insufficient", "variant": "security" },
+    { "id": "answer-llm", "from": "generate", "to": "openai", "label": "chat" },
+    { "id": "upsert", "from": "pipeline", "to": "chroma", "label": "embed + upsert" },
+    { "id": "fetch", "from": "pipeline", "to": "hosts", "label": "download", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Grounding", "items": ["Two refusal gates: similarity score, then an LLM evidence check", "Answers cite retrieved chunks as [n]; sources come from the cited numbers"] },
+    { "dot": "emerald", "title": "Comparison", "items": ["The same question streams to RAG and to the model alone in parallel threads"] },
+    { "dot": "amber", "title": "Data", "items": ["data/ is gitignored; a fresh start runs rag.bootstrap to build it", "Chunks embedded with text-embedding-3-small; the grader also calls OpenAI"] }
+  ]
+}

@@ -52,6 +52,8 @@ The gap is widest on long-tail facts and expert questions: with RAG, a small, ch
 
 ## How it works
 
+**[Interactive architecture diagram](https://htmlpreview.github.io/?https://github.com/ashutoshkaushik/ai-history-rag/blob/main/docs/architecture.html)** ([source file](docs/architecture.html), model: [docs/architecture.json](docs/architecture.json)): every component links to the code it describes. Generated with [Archify](https://github.com/tt-a1i/archify); search nodes, trace paths, switch light/dark, export PNG or SVG.
+
 1. **Ingest:** source documents are downloaded from their original hosts, cleaned, split into section-aware chunks (~500–800 tokens), embedded with `text-embedding-3-small` and stored in ChromaDB. Every chunk keeps its title, authors, year, era, page and section for citations.
 2. **Retrieve:** the question is embedded and the top chunks are retrieved. A similarity score gate refuses off-topic questions at no cost.
 3. **Check and answer:** a LangGraph flow asks the model whether the evidence actually answers the question, then writes a cited answer from those chunks only, or says it can't.
